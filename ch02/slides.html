@@ -61,6 +61,20 @@
     .slide .mt-svg { max-height: 720px; }
     .slide .tall .mt-svg { max-height: 800px; }
     .slide .short .mt-svg { max-height: 380px; }
+    .labframe { position: relative; width: 100%; height: 760px; border: 3px solid var(--line); border-radius: 22px; overflow: hidden; background: #c9d3c5; }
+    .labframe iframe { position: absolute; left: 0; top: 0; width: calc(100% / 1.35); height: calc(100% / 1.35); transform: scale(1.35); transform-origin: 0 0; border: 0; background: #c9d3c5; }
+    .lablink { position: absolute; right: 0; top: 6px; font: 500 28px var(--font-display); color: var(--teal); text-decoration: none; border: 3px solid var(--teal); border-radius: 999px; padding: 2px 22px; background: #fff; }
+    .slide.lab .bk { right: 250px; }
+    .act-badge.lb { background: var(--teal); }
+    .qmap { display: grid; grid-template-columns: repeat(3, 1fr); gap: 26px; }
+    .qmap .box { padding: 22px 26px; }
+    .qmap h3 { margin: 0 0 6px; font: 600 38px var(--font-display); color: var(--sec); }
+    .qmap .q { font: 500 34px var(--font-display); margin: 0 0 12px; line-height: 1.3; }
+    .qmap ul { margin: 0; padding-left: 30px; font-size: 28px; line-height: 1.45; }
+    .qmap .pg { font-size: 24px; color: var(--ink-soft); margin-top: 10px; }
+    .flow { display: flex; gap: 18px; align-items: center; justify-content: center; margin-top: 30px; font: 500 34px var(--font-display); }
+    .flow span { background: #fff; border: 3px solid var(--line); border-radius: 999px; padding: 6px 28px; }
+    .flow i { font-style: normal; color: var(--ink-soft); }
 </style>
 </head>
 <body>
@@ -90,12 +104,12 @@
       <tr><th>เวลา</th><th>ช่วง</th><th>นักเรียนทำอะไร</th></tr>
       <tr><td>0:00–0:10</td><td>เปิดเรื่อง</td><td>ไฟฟ้ามองไม่เห็น จะรู้ได้ยังไง</td></tr>
       <tr><td>0:10–0:20</td><td>แบบทดสอบก่อนเรียน</td><td>10 ข้อจากหนังสือหน้า 40–41</td></tr>
-      <tr><td>0:20–0:40</td><td>2.1–2.3 มิเตอร์แอนะลอก ส่วนประกอบ สเกล</td><td>ชี้ส่วนประกอบ · โหวต</td></tr>
-      <tr><td>0:40–1:10</td><td>2.4 การใช้มิเตอร์แอนะลอก</td><td>อ่านเข็มตามตัวอย่าง 2.1–2.4</td></tr>
+      <tr><td>0:20–0:40</td><td>2.1–2.3 มิเตอร์แอนะลอก ส่วนประกอบ สเกล</td><td>หาส่วนประกอบในแล็บ · โหวต</td></tr>
+      <tr><td>0:40–1:10</td><td>2.4 การใช้มิเตอร์แอนะลอก</td><td>อ่านเข็มตามตัวอย่าง · วัดถ่าน หลอดไฟ ตัวต้านทานในแล็บ</td></tr>
       <tr><td>1:10–1:20</td><td>พัก</td><td></td></tr>
-      <tr><td>1:20–1:35</td><td>2.5–2.6 มิเตอร์ดิจิทัล</td><td>อ่านจอ · เลือกขั้วเสียบสาย</td></tr>
+      <tr><td>1:20–1:35</td><td>2.5–2.6 มิเตอร์ดิจิทัล</td><td>วัดแบตเตอรี่และกระแสในแล็บ</td></tr>
       <tr><td>1:35–1:50</td><td>2.7–2.8 เครื่องกำเนิดสัญญาณ ออสซิลโลสโคป</td><td>ทายรูปคลื่น · คิด f = 1/t</td></tr>
-      <tr><td>1:50–2:05</td><td>เตรียมใบปฏิบัติงาน 2.1</td><td>ซ้อมอ่านเข็มบนจอ</td></tr>
+      <tr><td>1:50–2:05</td><td>เตรียมใบปฏิบัติงาน 2.1</td><td>ซ้อมตารางที่ 2.1 ในแล็บเสมือน</td></tr>
       <tr><td>2:05–3:20</td><td>ลงมือปฏิบัติ</td><td>วัดตารางที่ 2.1 บันทึกในหนังสือหน้า 43</td></tr>
       <tr><td>3:20–4:00</td><td>สรุปผลการทดลอง + หลังเรียน</td><td>เขียนสรุป · ทำ 10 ข้อ</td></tr>
     </table>
@@ -171,11 +185,27 @@
   </div>
 </section>
 
+<section class="slide sec-0" data-tag="แผนที่บท" data-title="แผนที่บท: 3 คำถาม">
+  <div class="body">
+    <h2 class="title reveal">8 หัวข้อในหนังสือ ตอบ 3 คำถามนี้</h2><div class="bk">หน้า 21</div>
+    <div class="qmap">
+      <div class="box reveal d1"><h3>คำถามที่ 1</h3><p class="q">เครื่องวัดหน้าตาเป็นยังไง</p>
+        <ul><li>2.1 ชนิดเครื่องวัด</li><li>2.2 ส่วนประกอบมิเตอร์เข็ม</li><li>2.3 สเกลหน้าปัด</li></ul><p class="pg">หนังสือหน้า 22–24</p></div>
+      <div class="box reveal d2"><h3>คำถามที่ 2</h3><p class="q">ใช้วัดยังไงให้ถูกและปลอดภัย</p>
+        <ul><li>2.4 ใช้มิเตอร์เข็ม</li><li>2.5 มิเตอร์ดิจิทัล</li><li>2.6 ใช้มิเตอร์ดิจิทัล</li><li>ใบปฏิบัติงาน 2.1</li></ul><p class="pg">หนังสือหน้า 25–35, 42–43</p></div>
+      <div class="box reveal d3"><h3>คำถามที่ 3</h3><p class="q">ดูรูปสัญญาณไฟฟ้ายังไง</p>
+        <ul><li>2.7 เครื่องกำเนิดสัญญาณ</li><li>2.8 ออสซิลโลสโคป</li></ul><p class="pg">หนังสือหน้า 35–39</p></div>
+    </div>
+    <div class="flow frag"><span>อ่านในหนังสือ</span><i>→</i><span>ลองในแล็บเสมือน</span><i>→</i><span>ทำกับเครื่องจริง</span></div>
+    <div class="src">ที่มา: หนังสือหน้า 21 ผังความคิด · การจัดกลุ่มเป็น 3 คำถามครูทำเพิ่มเพื่อให้เห็นภาพรวม</div>
+  </div>
+</section>
+
 <!-- ============ 2.1 ============ -->
 <section class="slide section sec-1" data-tag="2.1 ชนิดเครื่องวัด" data-title="2.1 ชนิดเครื่องวัดไฟฟ้าเบื้องต้น">
   <div class="big-no">2.1</div>
   <div class="body center">
-    <div class="label reveal">หัวข้อที่ 2.1 · หนังสือหน้า 22</div>
+    <div class="label reveal">คำถามที่ 1 · หัวข้อที่ 2.1 · หนังสือหน้า 22</div>
     <h2 class="reveal d1">ชนิดเครื่องวัดไฟฟ้าเบื้องต้น</h2>
   </div>
 </section>
@@ -218,10 +248,20 @@
 <section class="slide section sec-1" data-tag="2.2 มิเตอร์แอนะลอก" data-title="2.2 มัลติมิเตอร์ชนิดแอนะลอก">
   <div class="big-no">2.2</div>
   <div class="body center">
-    <div class="label reveal">หัวข้อที่ 2.2 · หนังสือหน้า 23</div>
+    <div class="label reveal">คำถามที่ 1 · หัวข้อที่ 2.2 · หนังสือหน้า 23</div>
     <h2 class="reveal d1">มัลติมิเตอร์ชนิดแอนะลอก</h2>
   </div>
 </section>
+
+<section class="slide sec-1 act lab" data-title="แล็บ: หาส่วนประกอบ">
+  <div class="body" style="top:96px">
+    <div><span class="act-badge lb">ลองในแล็บ</span><span class="act-meta">ภารกิจที่ 1 · ลองหาก่อน แล้วค่อยดูเฉลยในหนังสือ</span></div>
+    <h2 class="title" style="margin-bottom:10px">คลิกหาส่วนประกอบ 9 ส่วนของมิเตอร์เข็ม</h2><div class="bk">หน้า 23</div>
+    <div class="labframe"><iframe data-src="lab.html?m=1&amp;embed=1" title="ห้องแล็บมิเตอร์เสมือน ภารกิจที่ 1"></iframe></div>
+    <a class="lablink" href="lab.html?m=1" target="_blank" rel="noopener">เปิดเต็มจอ ↗</a>
+  </div>
+</section>
+
 
 <section class="slide sec-1" data-title="ส่วนประกอบมิเตอร์แอนะลอก 9 ส่วน">
   <div class="body" style="top:112px">
@@ -258,6 +298,16 @@
   </div>
 </section>
 
+<section class="slide sec-1 act lab" data-title="แล็บ: ปรับเข็มชี้ 0">
+  <div class="body" style="top:96px">
+    <div><span class="act-badge lb">ลองในแล็บ</span><span class="act-meta">ภารกิจที่ 2 · ซูมหน้าปัดแล้วหมุนสกรู</span></div>
+    <h2 class="title" style="margin-bottom:10px">ปรับสกรูให้เข็มชี้ 0 ก่อนใช้งานทุกครั้ง</h2><div class="bk">หน้า 23</div>
+    <div class="labframe"><iframe data-src="lab.html?m=2&amp;embed=1" title="ห้องแล็บมิเตอร์เสมือน ภารกิจที่ 2"></iframe></div>
+    <a class="lablink" href="lab.html?m=2" target="_blank" rel="noopener">เปิดเต็มจอ ↗</a>
+  </div>
+</section>
+
+
 <section class="slide sec-1 act" data-title="ชี้ให้ถูก">
   <div class="body">
     <div><span class="act-badge">ทายให้ถูก</span><span class="act-meta">ทั้งห้องโหวต ข้อละ 30 วินาที</span></div>
@@ -279,7 +329,7 @@
 <section class="slide section sec-1" data-tag="2.3 สเกลหน้าปัด" data-title="2.3 สเกลหน้าปัดมัลติมิเตอร์ชนิดแอนะลอก">
   <div class="big-no">2.3</div>
   <div class="body center">
-    <div class="label reveal">หัวข้อที่ 2.3 · หนังสือหน้า 24</div>
+    <div class="label reveal">คำถามที่ 1 · หัวข้อที่ 2.3 · หนังสือหน้า 24</div>
     <h2 class="reveal d1">สเกลหน้าปัดมิเตอร์แอนะลอก</h2>
   </div>
 </section>
@@ -341,7 +391,7 @@
 <section class="slide section sec-2" data-tag="2.4 ใช้มิเตอร์แอนะลอก" data-title="2.4 การใช้งานมัลติมิเตอร์ชนิดแอนะลอก">
   <div class="big-no">2.4</div>
   <div class="body center">
-    <div class="label reveal">หัวข้อที่ 2.4 · หนังสือหน้า 25–31</div>
+    <div class="label reveal">คำถามที่ 2 · หัวข้อที่ 2.4 · หนังสือหน้า 25–31</div>
     <h2 class="reveal d1">การใช้งานมิเตอร์แอนะลอก</h2>
     <p class="lead reveal d2">DCV · ACV · DCmA · Ω</p>
   </div>
@@ -415,12 +465,12 @@
   </div>
 </section>
 
-<section class="slide sec-2 act" data-title="ฝึกอ่านเข็ม">
-  <div class="body" style="top:112px">
-    <div><span class="act-badge">ฝึกอ่านเข็ม</span><span class="act-meta">กด "สุ่มโจทย์" ครูสุ่มเลขที่มาตอบ 5 รอบ</span></div>
-    <h2 class="title" style="margin-bottom:8px">เข็มชี้เท่าไร ตอบให้ครบ: สเกลไหน คูณเท่าไร ได้กี่โวลต์</h2>
-    <div data-meter="lab" data-ranges="0.1,0.5,2.5,10,50,250,1000" data-src="1.5,9,12,24,220"></div>
-    <div style="position:absolute;right:0;bottom:-10px"><div data-picker="40"></div></div>
+<section class="slide sec-2 act lab" data-title="แล็บ: วัดแรงดันถ่าน">
+  <div class="body" style="top:96px">
+    <div><span class="act-badge lb">ลองในแล็บ</span><span class="act-meta">ภารกิจที่ 3 · กดปุ่ม "ช่วยดูสเกล" ถ้ายังไม่แน่ใจว่าอ่านแถวไหน</span></div>
+    <h2 class="title" style="margin-bottom:10px">วัดถ่าน 1.5 V แล้วอ่านเข็มตามตารางที่ 2.1</h2><div class="bk">หน้า 25–26</div>
+    <div class="labframe"><iframe data-src="lab.html?m=3&amp;embed=1" title="ห้องแล็บมิเตอร์เสมือน ภารกิจที่ 3"></iframe></div>
+    <a class="lablink" href="lab.html?m=3" target="_blank" rel="noopener">เปิดเต็มจอ ↗</a>
   </div>
 </section>
 
@@ -456,6 +506,16 @@
     <div class="src">ที่มา: หนังสือหน้า 27 ขั้นตอนข้อ 4–5 รูปที่ 2.6 (ข) · ทบทวนความปลอดภัยจากบทเรียนที่ 1</div>
   </div>
 </section>
+
+<section class="slide sec-2 act lab" data-title="แล็บ: วัดไฟบ้าน">
+  <div class="body" style="top:96px">
+    <div><span class="act-badge lb">ลองในแล็บ</span><span class="act-meta">ภารกิจที่ 5 · ลองตั้งย่านผิดดูว่าเกิดอะไร (ในแล็บปลอดภัย)</span></div>
+    <h2 class="title" style="margin-bottom:10px">วัดไฟบ้านตามลำดับ: ตัดไฟ → ตั้งย่าน → ต่อสาย → จ่ายไฟ</h2><div class="bk">หน้า 26–28</div>
+    <div class="labframe"><iframe data-src="lab.html?m=5&amp;embed=1" title="ห้องแล็บมิเตอร์เสมือน ภารกิจที่ 5"></iframe></div>
+    <a class="lablink" href="lab.html?m=5" target="_blank" rel="noopener">เปิดเต็มจอ ↗</a>
+  </div>
+</section>
+
 
 <section class="slide sec-2" data-title="ตารางที่ 2.2 และตัวอย่างที่ 2.2">
   <div class="body">
@@ -500,6 +560,16 @@
   </div>
 </section>
 
+<section class="slide sec-2 act lab" data-title="แล็บ: วัดกระแสหลอดไฟ">
+  <div class="body" style="top:96px">
+    <div><span class="act-badge lb">ลองในแล็บ</span><span class="act-meta">ภารกิจที่ 6 · ถอดสายที่จุดตัดวงจร แล้วต่อมิเตอร์แทรกเข้าไป</span></div>
+    <h2 class="title" style="margin-bottom:10px">วัดกระแสหลอดไฟ: ต่อมิเตอร์อนุกรม</h2><div class="bk">หน้า 28–29</div>
+    <div class="labframe"><iframe data-src="lab.html?m=6&amp;embed=1" title="ห้องแล็บมิเตอร์เสมือน ภารกิจที่ 6"></iframe></div>
+    <a class="lablink" href="lab.html?m=6" target="_blank" rel="noopener">เปิดเต็มจอ ↗</a>
+  </div>
+</section>
+
+
 <section class="slide sec-2" data-title="ตารางที่ 2.3 และตัวอย่างที่ 2.3">
   <div class="body">
     <h2 class="title reveal">ตารางที่ 2.3 และตัวอย่างที่ 2.3</h2><div class="bk">หน้า 29</div>
@@ -534,6 +604,16 @@
     <div class="src">ที่มา: หนังสือหน้า 30–31 รูปที่ 2.10–2.11</div>
   </div>
 </section>
+
+<section class="slide sec-2 act lab" data-title="แล็บ: วัดความต้านทาน">
+  <div class="body" style="top:96px">
+    <div><span class="act-badge lb">ลองในแล็บ</span><span class="act-meta">ภารกิจที่ 7 · แตะปลายสายกัน หมุน 0Ω ADJ แล้วจึงวัด</span></div>
+    <h2 class="title" style="margin-bottom:10px">ปรับ 0 Ω ก่อน แล้ววัดตัวต้านทาน R2</h2><div class="bk">หน้า 30–31</div>
+    <div class="labframe"><iframe data-src="lab.html?m=7&amp;embed=1" title="ห้องแล็บมิเตอร์เสมือน ภารกิจที่ 7"></iframe></div>
+    <a class="lablink" href="lab.html?m=7" target="_blank" rel="noopener">เปิดเต็มจอ ↗</a>
+  </div>
+</section>
+
 
 <section class="slide sec-2" data-title="ตารางที่ 2.4 และตัวอย่างที่ 2.4">
   <div class="body">
@@ -596,7 +676,7 @@
 <section class="slide section sec-3" data-tag="2.5 มิเตอร์ดิจิทัล" data-title="2.5 มัลติมิเตอร์ชนิดดิจิทัล">
   <div class="big-no">2.5</div>
   <div class="body center">
-    <div class="label reveal">หัวข้อที่ 2.5 · หนังสือหน้า 31–33</div>
+    <div class="label reveal">คำถามที่ 2 · หัวข้อที่ 2.5 · หนังสือหน้า 31–33</div>
     <h2 class="reveal d1">มัลติมิเตอร์ชนิดดิจิทัล</h2>
   </div>
 </section>
@@ -647,7 +727,7 @@
 <section class="slide section sec-3" data-tag="2.6 ใช้มิเตอร์ดิจิทัล" data-title="2.6 การใช้งานมัลติมิเตอร์ชนิดดิจิทัล">
   <div class="big-no">2.6</div>
   <div class="body center">
-    <div class="label reveal">หัวข้อที่ 2.6 · หนังสือหน้า 33–35</div>
+    <div class="label reveal">คำถามที่ 2 · หัวข้อที่ 2.6 · หนังสือหน้า 33–35</div>
     <h2 class="reveal d1">การใช้งานมิเตอร์ดิจิทัล</h2>
   </div>
 </section>
@@ -681,6 +761,16 @@
   </div>
 </section>
 
+<section class="slide sec-3 act lab" data-title="แล็บ: มิเตอร์ดิจิทัลวัดแรงดัน">
+  <div class="body" style="top:96px">
+    <div><span class="act-badge lb">ลองในแล็บ</span><span class="act-meta">ภารกิจที่ 8 · ลองต่อกลับขั้วดูจอ</span></div>
+    <h2 class="title" style="margin-bottom:10px">มิเตอร์ดิจิทัลวัดแบตเตอรี่ 9 V</h2><div class="bk">หน้า 33</div>
+    <div class="labframe"><iframe data-src="lab.html?m=8&amp;embed=1" title="ห้องแล็บมิเตอร์เสมือน ภารกิจที่ 8"></iframe></div>
+    <a class="lablink" href="lab.html?m=8" target="_blank" rel="noopener">เปิดเต็มจอ ↗</a>
+  </div>
+</section>
+
+
 <section class="slide sec-3" data-title="2.6.3 วัดกระแส 2.6.4 วัดความต้านทาน">
   <div class="body">
     <h2 class="title reveal">2.6.3 กระแส ต่ออนุกรม · 2.6.4 ความต้านทาน วัดได้ทันที</h2><div class="bk">หน้า 34–35</div>
@@ -691,6 +781,16 @@
     <div class="src">ที่มา: หนังสือหน้า 34–35 รูปที่ 2.16–2.17</div>
   </div>
 </section>
+
+<section class="slide sec-3 act lab" data-title="แล็บ: มิเตอร์ดิจิทัลวัดกระแส">
+  <div class="body" style="top:96px">
+    <div><span class="act-badge lb">ลองในแล็บ</span><span class="act-meta">ภารกิจที่ 9 · ทำเสร็จแล้วต่อภารกิจที่ 10 วัดความต้านทาน</span></div>
+    <h2 class="title" style="margin-bottom:10px">กระแสเกิน 200 mA ต้องย้ายสายไปขั้ว 10A</h2><div class="bk">หน้า 34–35</div>
+    <div class="labframe"><iframe data-src="lab.html?m=9&amp;embed=1" title="ห้องแล็บมิเตอร์เสมือน ภารกิจที่ 9"></iframe></div>
+    <a class="lablink" href="lab.html?m=9" target="_blank" rel="noopener">เปิดเต็มจอ ↗</a>
+  </div>
+</section>
+
 
 <section class="slide sec-3 act" data-title="อ่านจอมิเตอร์ดิจิทัล">
   <div class="body">
@@ -730,7 +830,7 @@
 <section class="slide section sec-4" data-tag="2.7 เครื่องกำเนิดสัญญาณ" data-title="2.7 เครื่องกำเนิดสัญญาณ">
   <div class="big-no">2.7</div>
   <div class="body center">
-    <div class="label reveal">หัวข้อที่ 2.7 · หนังสือหน้า 35–37</div>
+    <div class="label reveal">คำถามที่ 3 · หัวข้อที่ 2.7 · หนังสือหน้า 35–37</div>
     <h2 class="reveal d1">เครื่องกำเนิดสัญญาณ</h2>
   </div>
 </section>
@@ -804,7 +904,7 @@
 <section class="slide section sec-4" data-tag="2.8 ออสซิลโลสโคป" data-title="2.8 ออสซิลโลสโคป">
   <div class="big-no">2.8</div>
   <div class="body center">
-    <div class="label reveal">หัวข้อที่ 2.8 · หนังสือหน้า 37–39</div>
+    <div class="label reveal">คำถามที่ 3 · หัวข้อที่ 2.8 · หนังสือหน้า 37–39</div>
     <h2 class="reveal d1">ออสซิลโลสโคป</h2>
   </div>
 </section>
@@ -895,7 +995,7 @@
 <section class="slide section sec-0" data-tag="ใบปฏิบัติงาน 2.1" data-title="ใบปฏิบัติงาน 2.1">
   <div class="big-no" style="font-size:300px">2.1</div>
   <div class="body center">
-    <div class="label reveal">ใบปฏิบัติงาน · หนังสือหน้า 42–43</div>
+    <div class="label reveal">คำถามที่ 2 · ใบปฏิบัติงาน · หนังสือหน้า 42–43</div>
     <h2 class="reveal d1">การวัดแรงดันไฟฟ้ากระแสตรง<br>ด้วยมัลติมิเตอร์</h2>
   </div>
 </section>
@@ -959,11 +1059,12 @@
   </div>
 </section>
 
-<section class="slide sec-0 act" data-title="ซ้อมก่อนลงมือ">
-  <div class="body" style="top:112px">
-    <div><span class="act-badge">ซ้อมบนจอ</span><span class="act-meta">ลองทุกแถวของตาราง 2.1 ก่อนจับเครื่องจริง · ลองกดย่านที่มี × ดูว่าเกิดอะไร</span></div>
-    <h2 class="title" style="margin-bottom:8px">เลือกแรงดันกับย่าน แล้วอ่านเข็มให้ได้ก่อนกดเฉลย</h2>
-    <div data-meter="lab"></div>
+<section class="slide sec-0 act lab" data-title="แล็บ: ซ้อมใบปฏิบัติงาน 2.1">
+  <div class="body" style="top:96px">
+    <div><span class="act-badge lb">ลองในแล็บ</span><span class="act-meta">ภารกิจที่ 4 · ลองทุกช่องของตาราง ลองตั้งย่านในช่อง "ห้ามวัด" ดูว่าเข็มเป็นอย่างไร</span></div>
+    <h2 class="title" style="margin-bottom:10px">ซ้อมตารางที่ 2.1 ก่อนจับเครื่องจริง</h2><div class="bk">หน้า 42–43</div>
+    <div class="labframe"><iframe data-src="lab.html?m=4&amp;embed=1" title="ห้องแล็บมิเตอร์เสมือน ภารกิจที่ 4"></iframe></div>
+    <a class="lablink" href="lab.html?m=4" target="_blank" rel="noopener">เปิดเต็มจอ ↗</a>
   </div>
 </section>
 
@@ -1051,5 +1152,17 @@
 <script src="meters.js"></script>
 <script src="../assets/js/sims.js"></script>
 <script src="../assets/js/deck.js"></script>
+<script>
+/* แล็บเสมือน: โหลดเฉพาะสไลด์ที่กำลังแสดง ออกจากสไลด์แล้วปิด เพื่อไม่ให้เครื่องช้า */
+(function () {
+    const sync = sl => {
+        const f = sl.querySelector('.labframe iframe'); if (!f) return;
+        if (sl.classList.contains('active')) { if (!f.getAttribute('src')) f.setAttribute('src', f.dataset.src); }
+        else if (f.getAttribute('src')) f.removeAttribute('src');
+    };
+    const mo = new MutationObserver(ms => ms.forEach(m => sync(m.target)));
+    document.querySelectorAll('.slide.lab').forEach(sl => { mo.observe(sl, { attributes: true, attributeFilter: ['class'] }); sync(sl); });
+})();
+</script>
 </body>
 </html>

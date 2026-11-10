@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ห้องแล็บมิเตอร์เสมือน บทที่ 2</title>
+<meta name="description" content="ห้องแล็บมัลติมิเตอร์เสมือน บทที่ 2 เครื่องวัดไฟฟ้าเบื้องต้น หมุนปุ่มเลือกย่าน ลากสายวัดไปวัดถ่าน หลอดไฟ ตัวต้านทาน และไฟบ้าน ได้ทั้งมิเตอร์เข็มและมิเตอร์ดิจิทัล">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;500;600&family=Sarabun:wght@400;700&family=Prompt:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/theme.css">
+<link rel="stylesheet" href="meters.css">
+<link rel="stylesheet" href="vlab.css">
+<link rel="icon" href="data:,">
+</head>
+<body class="vl">
+<header class="vl-head">
+  <a href="../index.html" class="back">← หน้าแรก</a>
+  <h1>ห้องแล็บมิเตอร์เสมือน</h1>
+  <span class="sub">บทที่ 2 · ลองต่อวัดบนจอให้คล่อง ก่อนจับเครื่องจริง</span>
+</header>
+
+<main class="vl-wrap">
+  <section class="vl-bench" aria-label="โต๊ะทดลอง">
+    <div class="vl-tools">
+      <button type="button" id="zOut" title="ซูมออก" aria-label="ซูมออก">−</button>
+      <button type="button" id="zIn" title="ซูมเข้า" aria-label="ซูมเข้า">+</button>
+      <button type="button" id="zFit">พอดีจอ</button>
+      <button type="button" id="zFace">ซูมหน้าปัด</button>
+      <button type="button" id="btnHelp">ช่วยดูสเกล</button>
+      <button type="button" id="btnObl">มองเฉียง</button>
+      <button type="button" id="fuseBtn" class="warnb" hidden>เปลี่ยนฟิวส์</button>
+    </div>
+    <svg id="bench" viewBox="0 60 2000 1120" tabindex="0" role="application" aria-label="โต๊ะทดลอง ลากปลั๊ก สายวัด และหมุนปุ่มได้ ใช้ลูกศรซ้ายขวาเปลี่ยนย่าน"></svg>
+    <div class="vl-howto" id="howto" hidden></div>
+    <div class="vl-status" id="status" aria-live="polite"></div>
+    <div class="vl-danger" id="danger" hidden>
+      <div class="card">
+        <h3></h3>
+        <p></p>
+        <button type="button" class="btn orange" id="dangerBtn">ตัดไฟ ยกสายออก แล้วลองใหม่</button>
+      </div>
+    </div>
+  </section>
+
+  <aside class="vl-panel">
+    <label class="msel">ภารกิจ
+      <select id="mSel"></select>
+    </label>
+    <div class="mcard">
+      <div class="mhead"><h2 id="mTitle"></h2><span class="chip" id="mPage"></span></div>
+      <p class="goal" id="mGoal"></p>
+      <ol class="steps" id="mSteps"></ol>
+      <div id="mParts"></div>
+      <div id="mTable"></div>
+      <p class="al ok" id="mDone" hidden>ทำภารกิจนี้ครบแล้ว</p>
+    </div>
+
+    <div id="freeBox" class="box" hidden>
+      <div class="row"><span>มิเตอร์</span>
+        <button type="button" class="pick on" data-meter-pick="analog">มิเตอร์เข็ม</button>
+        <button type="button" class="pick" data-meter-pick="dmm">มิเตอร์ดิจิทัล</button>
+      </div>
+      <label class="row"><span>บนโต๊ะ</span><select id="fxSel"></select></label>
+      <div class="row"><span>แหล่งจ่าย</span><button type="button" class="pick" id="psuDn">− 0.1 V</button><button type="button" class="pick" id="psuUp">+ 0.1 V</button></div>
+    </div>
+    <button type="button" class="btn small ghost" id="lampBtn" hidden>เปลี่ยนเป็นหลอด 0.5 A</button>
+
+    <div id="alerts" aria-live="polite"></div>
+
+    <div class="btn-row">
+      <button type="button" class="btn small ghost" id="resetBtn">เริ่มภารกิจนี้ใหม่</button>
+      <button type="button" class="btn small" id="nextBtn">ภารกิจถัดไป →</button>
+    </div>
+
+    <details class="how">
+      <summary>วิธีใช้</summary>
+      <ul>
+        <li>ลากปลั๊กสายไปเสียบขั้วที่มิเตอร์ ลากปลายเข็มวัดไปแตะจุดวัด (ปลายสายจะดูดติดเอง)</li>
+        <li>หมุนปุ่มเลือกย่าน: ลากหมุนที่ปุ่ม คลิกชื่อย่าน หรือกดลูกศรซ้าย/ขวา</li>
+        <li>ซูม: ล้อเมาส์ ใช้สองนิ้วบนมือถือ หรือปุ่ม + − · เลื่อนดู: ลากที่พื้นโต๊ะ</li>
+        <li>ค่าที่อ่านได้คำนวณจากวงจรจริง ต่อผิดย่านหรือผิดขั้วจะเห็นผลแบบเครื่องจริง</li>
+      </ul>
+    </details>
+  </aside>
+</main>
+
+<script src="meters.js"></script>
+<script src="vlab.js"></script>
+</body>
+</html>

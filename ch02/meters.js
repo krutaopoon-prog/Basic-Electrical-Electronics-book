@@ -1,6 +1,6 @@
 /* ===========================================
-   Meters — ภาพเครื่องวัดของบทที่ 2 (วาดใหม่เพื่อการสอน ไม่ใช่ยี่ห้อใด)
-   ใช้ได้ทุกหน้า: สไลด์ แบบฝึกหัด แบบทดสอบ เฉลย
+   Meters — ภาพเครื่องวัดของบทที่ 2 (วาดใหม่ตามรูปในหนังสือ ไม่ใส่ยี่ห้อ)
+   ใช้ได้ทุกหน้า: สไลด์ แบบฝึกหัด แบบทดสอบ เฉลย และห้องแล็บเสมือน (vlab.js)
 
    <span data-meter="face" data-frac="0.64"></span>          หน้าปัดมิเตอร์เข็ม เข็มชี้ที่สัดส่วน 0–1 ของสเกล
         data-frac="0.94,0.7,0.32,0.1" data-nums="1"          หลายเข็ม มีเลขกำกับปลายเข็ม
@@ -14,7 +14,6 @@
                                                              วงจรการต่อวัด
    <span data-meter="scope" data-marks="1"></span>             จอออสซิลโลสโคป (รูปที่ 2.21)
    <span data-meter="wave" data-wave="sine|square|tri|pulse|saw"></span>
-   <div data-meter="lab"></div>                               ฝึกอ่านเข็ม / ซ้อมตารางที่ 2.1 (ใช้ในสไลด์และหน้าเว็บ)
    =========================================== */
 (function (g) {
     'use strict';
@@ -27,8 +26,9 @@
        จุดหมุนเข็ม (500, 660) สเกลกวาด −45° ถึง +45° จากแนวตั้ง
        สเกลโอห์มคิดแบบมิเตอร์เข็มทั่วไป: ค่ากลางสเกล 20 (ตำแหน่ง = 20 / (20 + R)) */
     const PX = 500, PY = 660, SPAN = 90;
+    const ang = f => -SPAN / 2 + SPAN * f;
     const pt = (f, r) => {
-        const a = rad(-SPAN / 2 + SPAN * f);
+        const a = rad(ang(f));
         return [r1(PX + r * Math.sin(a)), r1(PY - r * Math.cos(a))];
     };
     const arc = (r, f0, f1) => {
@@ -36,54 +36,100 @@
         return `M${x0} ${y0} A${r} ${r} 0 0 1 ${x1} ${y1}`;
     };
     const ohmF = R => (R === Infinity ? 0 : 20 / (20 + R));
+    /* สเกลแดง AC 10 V: ช่วงต้นถูกบีบไปทางซ้าย (ไดโอดในมิเตอร์กินแรงดันไปส่วนหนึ่ง)
+       ตั้งค่าให้ตรงตัวอย่างที่ 2.2 หน้า 28: เข็มที่ 3.6 บนสเกลดำ อ่านสเกลแดงได้ 3.8 V */
+    const AC_VD = 0.3125;
+    const ac10F = v => Math.max(0, (v - AC_VD) / (10 - AC_VD));
+    const ac10V = f => f * (10 - AC_VD) + AC_VD;
     const tick = (f, ra, rb, w, c) => { const [a, b] = pt(f, ra), [x, y] = pt(f, rb); return `<path d="M${a} ${b} L${x} ${y}" stroke="${c || '#222'}" stroke-width="${w || 2}"/>`; };
-    const lbl = (f, r, s, size, c, extra) => { const [x, y] = pt(f, r); return `<text x="${x}" y="${y}" font-size="${size || 26}" ${F} font-weight="500" text-anchor="middle" dominant-baseline="middle" fill="${c || '#222'}" ${extra || ''}>${s}</text>`; };
+    // ตัวเลขบนสเกล เอียงตามแนวโค้งแบบหน้าปัดจริง
+    const lbl = (f, r, s, size, c, extra) => { const [x, y] = pt(f, r); return `<text x="${x}" y="${y}" font-size="${size || 26}" ${F} font-weight="500" text-anchor="middle" dominant-baseline="middle" fill="${c || '#222'}" transform="rotate(${r1(ang(f))} ${x} ${y})" ${extra || ''}>${s}</text>`; };
+    const FACE_DEFS = `<defs>
+        <linearGradient id="mtFaceG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fcfaf2"/><stop offset="1" stop-color="#eee8d6"/></linearGradient>
+        <linearGradient id="mtMirG" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#8d9aa3"/><stop offset=".42" stop-color="#e3eaee"/><stop offset=".5" stop-color="#fbfdfe"/><stop offset=".58" stop-color="#dfe6ea"/><stop offset="1" stop-color="#85929b"/></linearGradient>
+        <radialGradient id="mtPivG" cx=".5" cy="1" r="1"><stop offset="0" stop-color="#6a6a6a"/><stop offset=".7" stop-color="#2a2a2a"/><stop offset="1" stop-color="#111"/></radialGradient>
+    </defs>`;
+
+    /* เข็ม (วาดชี้ขึ้นแล้วหมุน) — แยกออกมาให้ห้องแล็บใช้ทำเข็มเคลื่อนที่ */
+    function needle(f, o) {
+        o = o || {};
+        const ff = Math.max(-0.06, Math.min(1.06, f));
+        const shape = `M${PX - 5} ${PY} L${PX - 1.3} ${PY - 548} L${PX + 1.3} ${PY - 548} L${PX + 5} ${PY} Z`;
+        let s = `<g class="mt-needle" ${o.id ? `id="${o.id}"` : ''} transform="rotate(${Math.round(ang(ff) * 1000) / 1000} ${PX} ${PY})">
+            <path d="${shape}" fill="#000" opacity=".16" transform="translate(6 8)"/>
+            <path d="${shape}" fill="#111"/>
+            <path d="M${PX - 1.3} ${PY - 548} L${PX + 1.3} ${PY - 548} L${PX + 2} ${PY - 470} L${PX - 2} ${PY - 470} Z" fill="#c62828"/>
+        </g>`;
+        if (o.num) {
+            const [nx, ny] = pt(ff, 575);
+            s += `<circle cx="${nx}" cy="${ny}" r="17" fill="#2e9b57"/><text x="${nx}" y="${ny + 1}" font-size="22" ${F} font-weight="700" fill="#fff" text-anchor="middle" dominant-baseline="middle">${o.num}</text>`;
+        }
+        return s;
+    }
+    const PIVOT = `<path d="M420 621 A80 80 0 0 1 580 621 Z" fill="url(#mtPivG)"/><path d="M440 621 A60 60 0 0 1 560 621" fill="none" stroke="#777" stroke-width="2" opacity=".6"/>`;
 
     function faceInner(o) {
         o = o || {};
-        let s = `<rect x="0" y="80" width="1000" height="540" rx="18" fill="#fbfaf4" stroke="#bbb" stroke-width="3"/>`;
+        let s = FACE_DEFS + `<rect x="0" y="80" width="1000" height="540" rx="18" fill="url(#mtFaceG)" stroke="#bbb" stroke-width="3"/>`;
+        // แถบเน้นแถวที่ต้องอ่าน (ห้องแล็บเปิดด้วยคลาส hl-…)
+        const band = (cls, r, f0, f1, w) => `<path class="mt-band ${cls}" d="${arc(r, f0, f1)}" fill="none" stroke="#ffb347" stroke-width="${w}" stroke-linecap="round" opacity="0"/>`;
+        s += band('b-ohm', 516, 0, 1, 44) + band('b-10', 410, 0, 1, 30) + band('b-50', 377, 0, 1, 30) + band('b-250', 344, 0, 1, 30) + band('b-ac10', 290, ac10F(1), 1, 36);
+
         // สเกลโอห์ม (บนสุด) 0 อยู่ขวา ∞ อยู่ซ้าย
-        s += `<path d="${arc(500, 0, 1)}" fill="none" stroke="#222" stroke-width="3"/>`;
-        const OT = [0, 0.5, 1, 1.5, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 14, 16, 18, 20, 25, 30, 40, 50, 60, 70, 80, 90, 100, 150, 200, 300, 500, 1000, 2000];
-        OT.forEach(R => { s += tick(ohmF(R), 500, 486, 2); });
-        [0, 1, 2, 5, 10, 20, 30, 50, 100, 200].forEach(R => { s += tick(ohmF(R), 500, 478, 3) + lbl(ohmF(R), 528, R, 26); });
-        s += lbl(0, 528, "∞", 30) + lbl(1.06, 500, "Ω", 30);
-        // แถบกระจกเงา
-        s += `<path d="${arc(470, 0, 1)}" fill="none" stroke="#c9d6df" stroke-width="20"/>`;
-        s += `<path d="${arc(470, 0, 1)}" fill="none" stroke="#e9f0f4" stroke-width="6"/>`;
-        // สเกลดำ DCV.A & ACV (ใต้กระจก) 0 อยู่ซ้าย
+        s += `<path d="${arc(500, 0, 1)}" fill="none" stroke="#222" stroke-width="3.5"/>`;
+        [[0, 2, 0.5], [2, 10, 1], [10, 20, 2], [20, 50, 5], [50, 100, 10], [100, 200, 20], [200, 500, 50], [500, 1000, 100], [1000, 2000, 500]]
+            .forEach(([a, b, st]) => { for (let R = a; R < b - 1e-9; R += st) s += tick(ohmF(R), 500, 489, 1.6); });
+        [0, 1, 2, 5, 10, 20, 30, 50, 100, 200].forEach(R => { s += tick(ohmF(R), 500, 476, 3) + lbl(ohmF(R), 528, R, 27); });
+        [500, 1000, 2000].forEach(R => { s += tick(ohmF(R), 500, 478, 2.4); });
+        s += tick(0, 500, 470, 3);
+        s += lbl(ohmF(500), 528, '500', 17) + lbl(ohmF(1000), 548, '1k', 16) + lbl(ohmF(2000), 570, '2k', 16)
+            + lbl(-0.04, 500, '∞', 30) + lbl(1.05, 512, 'Ω', 30);
+
+        // กระจกเงา
+        s += `<path d="${arc(470, 0, 1)}" fill="none" stroke="url(#mtMirG)" stroke-width="22"/>`;
+        s += `<path d="${arc(459, 0, 1)}" fill="none" stroke="#7d8a92" stroke-width="1.5"/><path d="${arc(481, 0, 1)}" fill="none" stroke="#7d8a92" stroke-width="1.5"/>`;
+
+        // สเกลดำ DCV.A & ACV (ใต้กระจก) 0 อยู่ซ้าย แบ่ง 50 ช่อง ตัวเลข 3 แถว
         s += `<path d="${arc(450, 0, 1)}" fill="none" stroke="#222" stroke-width="3"/>`;
-        for (let i = 0; i <= 50; i++) s += tick(i / 50, 450, i % 5 ? 438 : 428, i % 5 ? 2 : 3);
+        for (let i = 0; i <= 50; i++) s += tick(i / 50, 450, i % 5 ? 440 : 425, i % 5 ? 1.8 : 3);
+        for (let i = 0; i < 50; i++) s += tick((i + 0.5) / 50, 450, 445, 1);
         [[10, 410], [50, 377], [250, 344]].forEach(([full, r]) => {
+            s += `<g class="mt-row r-${full}">`;
             for (let k = 0; k <= 5; k++) s += lbl(k / 5, r, full * k / 5, 25);
+            s += `</g>`;
         });
-        s += `<text x="70" y="352" font-size="22" ${F} font-weight="600" fill="#222">DCV.A</text><text x="70" y="376" font-size="22" ${F} font-weight="600" fill="#222">&amp;ACV</text>`;
-        // สเกลแดง AC 10 V (เฉพาะย่าน 10 ACV) ช่วงต้นสเกลไม่เท่ากับสเกลดำ
-        s += `<path d="${arc(312, 0.05, 1)}" fill="none" stroke="#c0392b" stroke-width="3"/>`;
-        for (let v = 1; v <= 10; v++) { const f = 0.05 + 0.95 * Math.pow(v / 10, 1.08); s += tick(f, 312, 300, 2, '#c0392b'); if (v % 2 === 0) s += lbl(f, 285, v, 20, '#c0392b'); }
-        s += `<text x="150" y="470" font-size="22" ${F} font-weight="600" fill="#c0392b">AC10V</text>`;
-        // สเกลย่อยอื่น (hFE, ILI LV, dB) แสดงให้เห็นว่ามี ไม่ใช้อ่านในบทนี้
+        s += `<text x="40" y="404" font-size="21" ${F} font-weight="600" fill="#222">DCV.A</text><text x="40" y="428" font-size="21" ${F} font-weight="600" fill="#222">&amp;ACV</text>`;
+        s += `<text x="960" y="404" font-size="21" ${F} font-weight="600" fill="#222" text-anchor="end">DCV.A</text><text x="960" y="428" font-size="21" ${F} font-weight="600" fill="#222" text-anchor="end">&amp;ACV</text>`;
+
+        // สเกลแดง AC 10 V (ใช้เฉพาะย่าน ACV 10 V)
+        s += `<path d="${arc(312, ac10F(1), 1)}" fill="none" stroke="#c0392b" stroke-width="3"/>`;
+        for (let k = 5; k <= 50; k++) { const v = k / 5, maj = k % 5 === 0; s += tick(ac10F(v), 312, maj ? 297 : 304, maj ? 2.4 : 1.3, '#c0392b'); }
+        s += `<g class="mt-row r-ac10">`;
+        for (let v = 2; v <= 10; v += 2) s += lbl(ac10F(v), 282, v, 21, '#c0392b');
+        s += `</g><text x="120" y="480" font-size="21" ${F} font-weight="600" fill="#c0392b">AC10V</text><text x="880" y="480" font-size="21" ${F} font-weight="600" fill="#c0392b" text-anchor="end">AC10V</text>`;
+
+        // สเกลย่อยอื่น (hFE, LI · LV, dB) มีบนเครื่องจริง ไม่ใช้อ่านในบทนี้
         s += `<path d="${arc(258, 0.03, 0.97)}" fill="none" stroke="#2c6fbb" stroke-width="2.5"/>`;
-        s += `<path d="${arc(232, 0.03, 0.97)}" fill="none" stroke="#555" stroke-width="2"/>`;
-        s += `<path d="${arc(206, 0.03, 0.97)}" fill="none" stroke="#c0392b" stroke-width="2"/>`;
-        s += `<text x="232" y="520" font-size="20" ${F} fill="#2c6fbb">hFE</text><text x="250" y="548" font-size="18" ${F} fill="#555">LI · LV</text><text x="280" y="574" font-size="18" ${F} fill="#c0392b">dB</text>`;
-        s += `<text x="40" y="118" font-size="20" ${F} fill="#888">CONTINUITY</text><circle cx="58" cy="140" r="9" fill="#a33" opacity=".6"/>`;
+        for (let k = 0; k <= 10; k++) s += tick(0.03 + 0.94 * k / 10, 258, k % 5 ? 251 : 246, 1.6, '#2c6fbb');
+        [0, 200, 400, 600, 800, 1000].forEach((v, k) => { s += lbl(0.03 + 0.94 * k / 5, 236, v, 15, '#2c6fbb'); });
+        s += `<path d="${arc(214, 0.05, 0.95)}" fill="none" stroke="#555" stroke-width="2"/>`;
+        for (let k = 0; k <= 10; k++) s += tick(0.05 + 0.9 * k / 10, 214, 208, 1.4, '#555');
+        s += `<path d="${arc(188, ac10F(0.775), ac10F(9.76))}" fill="none" stroke="#c0392b" stroke-width="2"/>`;
+        for (let d = 0; d <= 22; d += 2) s += tick(ac10F(0.775 * Math.pow(10, d / 20)), 188, d % 10 ? 183 : 179, 1.4, '#c0392b');
+        [0, 10, 20].forEach(d => { s += lbl(ac10F(0.775 * Math.pow(10, d / 20)), 168, (d ? '+' : '') + d, 14, '#c0392b'); });
+        s += `<text x="232" y="520" font-size="19" ${F} fill="#2c6fbb">hFE</text><text x="262" y="550" font-size="17" ${F} fill="#555">LI · LV</text><text x="300" y="578" font-size="17" ${F} fill="#c0392b">dB</text>`;
+        s += `<text x="40" y="116" font-size="18" ${F} fill="#888">CONTINUITY</text><circle class="mt-led" data-part="2" cx="58" cy="140" r="10" fill="#8e2a2a" stroke="#555" stroke-width="2"/><circle data-part="2" cx="58" cy="140" r="34" fill="transparent"/>`;
+
         // เข็ม
-        const fr = o.fracs || [];
-        fr.forEach((f, i) => {
-            const ff = Math.max(-0.04, Math.min(1.04, f));
-            const [x, y] = pt(ff, 545);
-            s += `<path class="mt-needle" d="M${PX} ${PY} L${x} ${y}" stroke="#111" stroke-width="4"/>`;
-            if (o.nums) { const [nx, ny] = pt(ff, 575); s += `<circle cx="${nx}" cy="${ny}" r="17" fill="#2e9b57"/><text x="${nx}" y="${ny + 1}" font-size="22" ${F} font-weight="700" fill="#fff" text-anchor="middle" dominant-baseline="middle">${i + 1}</text>`; }
-        });
-        s += `<path d="M420 620 A80 80 0 0 1 580 620 Z" fill="#3a3a3a"/>`;
+        (o.fracs || []).forEach((f, i) => { s += needle(f, { num: o.nums ? i + 1 : 0 }); });
+        s += PIVOT;
         // เลขชี้ส่วนประกอบสเกล (รูปที่ 2.3)
         if (o.labels) {
             const call = (n, x, y, tx, ty) => `<path d="M${x} ${y} L${tx} ${ty}" stroke="#d6455d" stroke-width="2.5"/><circle cx="${x}" cy="${y}" r="20" fill="#d6455d"/><text x="${x}" y="${y + 1}" font-size="24" ${F} font-weight="700" fill="#fff" text-anchor="middle" dominant-baseline="middle">${n}</text>`;
             const [a1, b1] = pt(0.03, 500), [a8, b8] = pt(0.97, 470), [a2, b2] = pt(0.02, 445), [a3, b3] = pt(0.12, 312);
             s += call(1, 40, 210, a1, b1) + call(2, 30, 300, a2 + 4, b2) + call(3, 105, 430, a3, b3)
-                + call(4, 190, 515, 232, 512) + call(5, 960, 470, pt(0.96, 232)[0], pt(0.96, 232)[1]) + call(6, 960, 540, pt(0.94, 232)[0], pt(0.94, 232)[1])
-                + call(7, 330, 600, 300, 575) + call(8, 960, 260, a8, b8);
+                + call(4, 190, 515, 232, 512) + call(5, 960, 470, pt(0.96, 214)[0], pt(0.96, 214)[1]) + call(6, 960, 540, pt(0.94, 214)[0], pt(0.94, 214)[1])
+                + call(7, 330, 600, 306, 576) + call(8, 960, 260, a8, b8);
         }
         return s;
     }
@@ -91,7 +137,10 @@
         return `<svg class="mt-svg" viewBox="${o.labels ? '-20 70 1040 560' : '0 80 1000 540'}" role="img" aria-label="หน้าปัดมิเตอร์เข็ม">${faceInner(o)}</svg>`;
     }
 
-    /* ---------- ตัวมิเตอร์เข็มทั้งเครื่อง ---------- */
+    /* ---------- ตัวมิเตอร์เข็มทั้งเครื่อง (รูปที่ 2.2) ----------
+       หน้าปัดย่อ 0.53 เท่า วางในกรอบหน้าต่าง · ปุ่มหมุนอยู่ที่ (400, 662) */
+    const FACE_T = 'translate(135 56) scale(0.53) translate(0 -80)';
+    const AK = { cx: 400, cy: 662, R: 172, screw: [400, 384], adj: [630, 436], com: [175, 850], pos: [625, 850], out: [180, 452] };
     // ตำแหน่งสวิตช์เลือกย่าน: มุมตามเข็มนาฬิกาจากด้านบน
     const ASEL = [
         ['off', 0, 'OFF', 'off'],
@@ -100,52 +149,122 @@
         ['ma250', 186, '250', 'dca'], ['ma25', 204, '25', 'dca'], ['ma2.5', 222, '2.5', 'dca'],
         ['dcv0.1', 240, '0.1', 'dcv'], ['dcv0.5', 256, '0.5', 'dcv'], ['dcv2.5', 272, '2.5', 'dcv'], ['dcv10', 288, '10', 'dcv'], ['dcv50', 304, '50', 'dcv'], ['dcv250', 320, '250', 'dcv'], ['dcv1000', 338, '1000', 'dcv']
     ];
-    const GCOL = { acv: '#e0483b', ohm: '#fff', dca: '#fff', dcv: '#fff', off: '#9ad19a' };
-    function analog(o) {
-        const cx = 400, cy = 662, R = 172;
-        const at = (deg, r) => [r1(cx + r * Math.sin(rad(deg))), r1(cy - r * Math.cos(rad(deg)))];
-        let s = `<rect x="100" y="20" width="600" height="880" rx="46" fill="#26272b"/>
-            <rect x="130" y="48" width="540" height="330" rx="14" fill="#ddd"/>
-            <svg x="135" y="54" width="530" height="290" viewBox="0 80 1000 540">${faceInner({ fracs: o.fracs || [0] })}</svg>
-            <circle cx="400" cy="390" r="15" fill="#111" stroke="#666" stroke-width="3"/><path d="M390 390 H410" stroke="#888" stroke-width="3"/>
-            <circle cx="630" cy="418" r="38" fill="#111" stroke="#555" stroke-width="4"/><text x="630" y="476" font-size="22" ${F} fill="#eee" text-anchor="middle">0Ω ADJ</text>
-            <circle cx="180" cy="452" r="20" fill="#111" stroke="#777" stroke-width="5"/><text x="180" y="496" font-size="20" ${F} fill="#e0483b" text-anchor="middle">OUTPUT</text>`;
+    const GCOL = { acv: '#ff5a4a', ohm: '#fff', dca: '#fff', dcv: '#fff', off: '#7ddc7d' };
+    const atA = (deg, r) => [r1(AK.cx + r * Math.sin(rad(deg))), r1(AK.cy - r * Math.cos(rad(deg)))];
+    const BODY_DEFS = `<defs>
+        <linearGradient id="mtBodyG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3b3d42"/><stop offset=".5" stop-color="#2a2b2f"/><stop offset="1" stop-color="#1c1d20"/></linearGradient>
+        <radialGradient id="mtKnobG" cx=".4" cy=".35" r=".75"><stop offset="0" stop-color="#4a4b50"/><stop offset=".7" stop-color="#1d1e21"/><stop offset="1" stop-color="#0d0d0f"/></radialGradient>
+        <linearGradient id="mtCopG" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#8a4f22"/><stop offset=".5" stop-color="#d08a4c"/><stop offset="1" stop-color="#8a4f22"/></linearGradient>
+        <radialGradient id="mtJackG" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#000"/><stop offset=".55" stop-color="#1a1a1a"/><stop offset=".56" stop-color="#9a9a9a"/><stop offset="1" stop-color="#5a5a5a"/></radialGradient>
+    </defs>`;
+    function analogBody(o) {
+        o = o || {};
+        const { cx, cy, R } = AK;
+        let s = BODY_DEFS + `<rect x="100" y="20" width="600" height="880" rx="46" fill="url(#mtBodyG)"/>
+            <rect x="104" y="24" width="592" height="872" rx="43" fill="none" stroke="#5a5c62" stroke-width="2"/>
+            <rect x="122" y="40" width="556" height="378" rx="16" fill="#121214"/>
+            <rect x="132" y="50" width="536" height="358" rx="10" fill="#eee8d6"/>
+            <g data-part="1">${`<g transform="${FACE_T}">${faceInner({})}</g>`}</g>
+            <text x="150" y="398" font-size="15" ${F} font-weight="600" fill="#555" letter-spacing="1">ANALOG MULTITESTER</text>
+            <path d="M132 50 L330 50 L190 408 L132 408 Z" fill="#fff" opacity=".07" pointer-events="none"/>
+            <text x="${AK.adj[0]}" y="${AK.adj[1] + 60}" font-size="21" ${F} fill="#eee" text-anchor="middle">0Ω ADJ</text>
+            <g data-part="6" data-jack="out"><circle cx="${AK.out[0]}" cy="${AK.out[1]}" r="22" fill="url(#mtJackG)"/></g>
+            <text x="${AK.out[0]}" y="${AK.out[1] + 46}" font-size="19" ${F} fill="#ff5a4a" text-anchor="middle">OUTPUT</text>`;
         // ไฮไลต์กลุ่มย่าน
         if (o.hl) {
             const its = ASEL.filter(a => a[3] === o.hl);
             const a0 = its[0][1] - 9, a1 = its[its.length - 1][1] + 9;
-            const [x0, y0] = at(a0, R), [x1, y1] = at(a1, R);
+            const [x0, y0] = atA(a0, R), [x1, y1] = atA(a1, R);
             s += `<path d="M${x0} ${y0} A${R} ${R} 0 ${a1 - a0 > 180 ? 1 : 0} 1 ${x1} ${y1}" fill="none" stroke="#f2a65a" stroke-width="64" opacity=".85"/>`;
         }
+        // วงแบ่งกลุ่มย่าน (เส้นขาวแบบหน้าเครื่องจริง)
+        const seg = (d0, d1, c) => { const [x0, y0] = atA(d0, R + 26), [x1, y1] = atA(d1, R + 26); return `<path d="M${x0} ${y0} A${R + 26} ${R + 26} 0 ${d1 - d0 > 180 ? 1 : 0} 1 ${x1} ${y1}" fill="none" stroke="${c}" stroke-width="2.5" opacity=".75"/>`; };
+        s += seg(10, 80, '#ff5a4a') + seg(84, 172, '#fff') + seg(178, 230, '#fff') + seg(233, 346, '#fff');
         ASEL.forEach(([id, deg, t, grp]) => {
-            const [x, y] = at(deg, R);
-            const [tx, ty] = at(deg, R - 40);
-            s += `<path d="M${tx} ${ty} L${at(deg, R - 26)[0]} ${at(deg, R - 26)[1]}" stroke="${GCOL[grp]}" stroke-width="5"/>`;
-            s += `<text x="${x}" y="${y}" font-size="${t.length > 3 ? 21 : 24}" ${F} font-weight="500" fill="${GCOL[grp]}" text-anchor="middle" dominant-baseline="middle">${t}</text>`;
+            const [x, y] = atA(deg, R);
+            const [dx, dy] = atA(deg, R - 34);
+            s += `<circle cx="${dx}" cy="${dy}" r="4.5" fill="${GCOL[grp]}"/>`;
+            s += `<text data-sel="${id}" x="${x}" y="${y}" font-size="${t.length > 3 ? 21 : 24}" ${F} font-weight="500" fill="${GCOL[grp]}" text-anchor="middle" dominant-baseline="middle" style="cursor:pointer">${t}</text>`;
         });
-        const glab = (deg, t, c) => { const [x, y] = at(deg, R + 46); return `<text x="${x}" y="${y}" font-size="26" ${F} font-weight="700" fill="${c}" text-anchor="middle" dominant-baseline="middle">${t}</text>`; };
-        s += glab(46, 'ACV', '#e0483b') + glab(128, 'Ω', '#fff') + glab(204, 'DCmA', '#fff') + glab(290, 'DCV', '#fff');
-        // ปุ่มหมุน
-        const sel = ASEL.find(a => a[0] === (o.sel || 'off')) || ASEL[0];
-        const [p1, q1] = at(sel[1], 112), [p2, q2] = at(sel[1] + 180, 112);
-        s += `<circle cx="${cx}" cy="${cy}" r="126" fill="#1a1a1c" stroke="#444" stroke-width="4"/>
-              <path d="M${p2} ${q2} L${p1} ${q1}" stroke="#b87333" stroke-width="40" stroke-linecap="round"/>
-              <path d="M${cx} ${cy} L${at(sel[1], 100)[0]} ${at(sel[1], 100)[1]}" stroke="#fff" stroke-width="6" stroke-linecap="round"/>`;
+        const glab = (deg, t, c) => { const [x, y] = atA(deg, R + 50); return `<text x="${x}" y="${y}" font-size="26" ${F} font-weight="700" fill="${c}" text-anchor="middle" dominant-baseline="middle">${t}</text>`; };
+        s += glab(46, 'ACV', '#ff5a4a') + glab(128, 'Ω', '#fff') + glab(204, 'DCmA', '#fff') + glab(290, 'DCV', '#fff');
+        s += `<text x="214" y="768" font-size="14" ${F} fill="#ddd" text-anchor="middle">50µA</text>`;
         // ขั้วเสียบสาย
-        s += `<circle cx="175" cy="850" r="26" fill="#111" stroke="#888" stroke-width="6"/><text x="175" y="808" font-size="22" ${F} fill="#fff" text-anchor="middle">−COM</text>
-              <rect x="585" y="815" width="90" height="72" rx="14" fill="#c0392b"/><circle cx="625" cy="850" r="24" fill="#111" stroke="#e8e8e8" stroke-width="5"/><text x="664" y="808" font-size="26" ${F} fill="#fff" text-anchor="middle">+</text>`;
+        s += `<text x="${AK.com[0]}" y="806" font-size="22" ${F} fill="#fff" text-anchor="middle">−COM</text>
+              <g data-part="9" data-jack="com"><circle cx="${AK.com[0]}" cy="${AK.com[1]}" r="30" fill="url(#mtJackG)"/></g>
+              <rect x="580" y="812" width="92" height="76" rx="16" fill="#c0392b"/>
+              <g data-part="8" data-jack="pos"><circle cx="${AK.pos[0]}" cy="${AK.pos[1]}" r="28" fill="url(#mtJackG)"/></g>
+              <text x="664" y="806" font-size="28" ${F} fill="#fff" text-anchor="middle">+</text>`;
+        return s;
+    }
+    function analogScrew(deg) {
+        const [x, y] = AK.screw;
+        return `<g data-part="4" data-drag="screw" transform="rotate(${r1(deg || 0)} ${x} ${y})" style="cursor:grab"><circle cx="${x}" cy="${y}" r="38" fill="transparent"/><circle cx="${x}" cy="${y}" r="17" fill="#1d1d1d" stroke="#8a8a8a" stroke-width="3"/><path d="M${x - 11} ${y} H${x + 11}" stroke="#bbb" stroke-width="4" stroke-linecap="round"/></g>`;
+    }
+    function analogAdj(deg) {
+        const [x, y] = AK.adj;
+        let r = '';
+        for (let i = 0; i < 30; i++) r += `<path d="M${x} ${y - 38} V${y - 31}" stroke="#555" stroke-width="3" transform="rotate(${i * 12} ${x} ${y})"/>`;
+        return `<g data-part="5" data-drag="adj" style="cursor:grab"><g transform="rotate(${r1(deg || 0)} ${x} ${y})"><circle cx="${x}" cy="${y}" r="40" fill="url(#mtKnobG)" stroke="#3a3a3a" stroke-width="2"/>${r}<path d="M${x} ${y - 28} V${y - 12}" stroke="#eee" stroke-width="4" stroke-linecap="round"/></g></g>`;
+    }
+    function analogKnob(sel) {
+        const { cx, cy } = AK;
+        const it = ASEL.find(a => a[0] === sel) || ASEL[0];
+        let ridges = '';
+        for (let i = 0; i < 36; i++) ridges += `<path d="M${cx} ${cy - 126} V${cy - 116}" stroke="#333" stroke-width="5" transform="rotate(${i * 10} ${cx} ${cy})"/>`;
+        return `<g data-part="7" data-drag="knob" style="cursor:grab"><circle cx="${cx}" cy="${cy}" r="128" fill="url(#mtKnobG)" stroke="#444" stroke-width="3"/>${ridges}
+            <g class="mt-knob" transform="rotate(${it[1]} ${cx} ${cy})">
+              <rect x="${cx - 21}" y="${cy - 116}" width="42" height="232" rx="21" fill="url(#mtCopG)"/>
+              <path d="M${cx} ${cy - 104} V${cy + 104}" stroke="#f3e2c8" stroke-width="4" stroke-linecap="round" opacity=".55"/>
+              <path d="M${cx} ${cy - 104} V${cy - 10}" stroke="#fff" stroke-width="7" stroke-linecap="round"/>
+              <path d="M${cx - 9} ${cy - 92} L${cx} ${cy - 110} L${cx + 9} ${cy - 92} Z" fill="#fff"/>
+            </g></g>`;
+    }
+    function analog(o) {
+        let s = analogBody(o) + analogScrew(0) + analogAdj(0) + analogKnob(o.sel || 'off');
+        s += `<g transform="${FACE_T}">${(o.fracs && o.fracs.length ? o.fracs : [0]).map(f => needle(f)).join('')}${PIVOT}</g>`;
         let vb = '100 20 600 880';
         if (o.labels) {
             vb = '0 10 800 900';
             const call = (n, x, y, tx, ty) => `<path d="M${x} ${y} L${tx} ${ty}" stroke="#d6455d" stroke-width="3"/><circle cx="${x}" cy="${y}" r="24" fill="#d6455d"/><text x="${x}" y="${y + 1}" font-size="26" ${F} font-weight="700" fill="#fff" text-anchor="middle" dominant-baseline="middle">${n}</text>`;
-            s += call(1, 750, 120, 640, 150) + call(2, 50, 80, 162, 128) + call(3, 50, 230, 330, 260)
-                + call(4, 50, 390, 384, 390) + call(5, 750, 418, 668, 418) + call(6, 50, 452, 160, 452)
-                + call(7, 750, 662, 520, 662) + call(8, 750, 850, 650, 850) + call(9, 50, 850, 150, 850);
+            s += call(1, 750, 120, 640, 150) + call(2, 50, 80, 162, 90) + call(3, 50, 230, 330, 292)
+                + call(4, 50, 384, 382, 384) + call(5, 750, 436, 670, 436) + call(6, 50, 452, 158, 452)
+                + call(7, 750, 662, 528, 662) + call(8, 750, 850, 653, 850) + call(9, 50, 850, 145, 850);
         }
         return `<svg class="mt-svg" viewBox="${vb}" role="img" aria-label="มัลติมิเตอร์ชนิดแอนะลอก">${s}</svg>`;
     }
 
-    /* ---------- มัลติมิเตอร์ดิจิทัล (ย่านแบบรุ่นราคาถูกที่ใช้ในหนังสือ) ---------- */
+    /* ---------- ตัวเลข 7 ส่วนแบบจอ LCD ----------
+       str จัดชิดขวา 4 หลัก เช่น "-9.00" "150.0" "1   " (เกินย่าน แสดง 1 หลักซ้ายสุด) "" (ปิดเครื่อง) */
+    const SEG = { '0': 'abcdef', '1': 'bc', '2': 'abdeg', '3': 'abcdg', '4': 'bcfg', '5': 'acdfg', '6': 'acdefg', '7': 'abc', '8': 'abcdefg', '9': 'abcdfg', '-': 'g', ' ': '', 'L': 'def', 'o': 'cdeg' };
+    function seg7(str, x, y, h, col) {
+        col = col || '#1d2318';
+        const w = h * 0.54, t = h * 0.13, pitch = h * 0.8;
+        let neg = false;
+        str = String(str == null ? '' : str);
+        if (str[0] === '-') { neg = true; str = str.slice(1); }
+        const cells = [];
+        for (const c of str) { if (c === '.') { if (cells.length) cells[cells.length - 1].dp = true; } else cells.push({ ch: c, dp: false }); }
+        while (cells.length < 4) cells.unshift({ ch: ' ', dp: false });
+        const H = (x0, yy) => `${r1(x0 + t * 0.6)},${r1(yy)} ${r1(x0 + t * 1.1)},${r1(yy - t / 2)} ${r1(x0 + w - t * 1.1)},${r1(yy - t / 2)} ${r1(x0 + w - t * 0.6)},${r1(yy)} ${r1(x0 + w - t * 1.1)},${r1(yy + t / 2)} ${r1(x0 + t * 1.1)},${r1(yy + t / 2)}`;
+        const V = (xx, y0, y1) => `${r1(xx)},${r1(y0 + t * 0.6)} ${r1(xx + t / 2)},${r1(y0 + t * 1.1)} ${r1(xx + t / 2)},${r1(y1 - t * 1.1)} ${r1(xx)},${r1(y1 - t * 0.6)} ${r1(xx - t / 2)},${r1(y1 - t * 1.1)} ${r1(xx - t / 2)},${r1(y0 + t * 1.1)}`;
+        const segPts = (x0) => {
+            const top = y, mid = y + h / 2, bot = y + h;
+            return { a: H(x0, top + t / 2), g: H(x0, mid), d: H(x0, bot - t / 2), f: V(x0 + t / 2, top, mid), b: V(x0 + w - t / 2, top, mid), e: V(x0 + t / 2, mid, bot), c: V(x0 + w - t / 2, mid, bot) };
+        };
+        let s = '';
+        cells.slice(-4).forEach((c, i) => {
+            const x0 = x + i * pitch, P = segPts(x0), on = SEG[c.ch] || '';
+            'abcdefg'.split('').forEach(k => { s += `<polygon points="${P[k]}" fill="${col}" opacity="${on.includes(k) ? 1 : 0.07}"/>`; });
+            s += `<circle cx="${r1(x0 + w + t * 0.75)}" cy="${r1(y + h - t / 2)}" r="${r1(t * 0.55)}" fill="${col}" opacity="${c.dp ? 1 : 0.07}"/>`;
+        });
+        const mx = x - pitch * 0.62;
+        s += `<polygon points="${H(mx, y + h / 2)}" fill="${col}" opacity="${neg ? 1 : 0.07}"/>`;
+        return `<g transform="translate(${x} ${y + h}) skewX(-6) translate(${-x} ${-(y + h)})">${s}</g>`;
+    }
+
+    /* ---------- มัลติมิเตอร์ดิจิทัล (ย่านแบบรุ่นราคาถูกที่ใช้ในหนังสือ รูปที่ 2.13) ---------- */
+    const DK = { cx: 380, cy: 480, R: 205, a10: [560, 760], vma: [560, 840], com: [560, 920], lcd: [196, 72, 368, 122] };
     const DSEL = [
         ['off', 0, 'OFF', 'off'],
         ['acv750', 20, '750', 'acv'], ['acv200', 36, '200', 'acv'],
@@ -154,39 +273,65 @@
         ['o200', 192, '200', 'ohm'], ['o2000', 208, '2000', 'ohm'], ['o20k', 224, '20k', 'ohm'], ['o200k', 240, '200k', 'ohm'], ['o2000k', 256, '2000k', 'ohm'],
         ['v200m', 278, '200m', 'dcv'], ['v2000m', 294, '2000m', 'dcv'], ['v20', 310, '20', 'dcv'], ['v200', 326, '200', 'dcv'], ['v1000', 342, '1000', 'dcv']
     ];
-    function dmm(o) {
-        const cx = 380, cy = 480, R = 205;
-        const at = (deg, r) => [r1(cx + r * Math.sin(rad(deg))), r1(cy - r * Math.cos(rad(deg)))];
-        const disp = o.disp || '000';
-        let s = `<rect x="130" y="20" width="500" height="960" rx="50" fill="#f5c518" stroke="#c99a00" stroke-width="4"/>
-            <rect x="180" y="58" width="400" height="150" rx="12" fill="#3b3b3b"/><rect x="196" y="72" width="368" height="122" rx="6" fill="#c9d3b8"/>
-            <text x="548" y="168" font-size="96" ${F} font-weight="500" fill="#1d1d1d" text-anchor="end" letter-spacing="6">${disp}</text>`;
-        const glab = (deg, t, r) => { const [x, y] = at(deg, r || R + 44); return `<text x="${x}" y="${y}" font-size="26" ${F} font-weight="700" fill="#222" text-anchor="middle" dominant-baseline="middle">${t}</text>`; };
-        s += `<circle cx="${cx}" cy="${cy}" r="${R + 18}" fill="none" stroke="#2e7d32" stroke-width="3" stroke-dasharray="2 8"/>`;
+    const atD = (deg, r) => [r1(DK.cx + r * Math.sin(rad(deg))), r1(DK.cy - r * Math.cos(rad(deg)))];
+    const DMM_DEFS = `<defs>
+        <linearGradient id="mtYelG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffd84a"/><stop offset=".6" stop-color="#f6c315"/><stop offset="1" stop-color="#e2aa00"/></linearGradient>
+        <radialGradient id="mtDKnobG" cx=".42" cy=".38" r=".7"><stop offset="0" stop-color="#ffcf4a"/><stop offset=".75" stop-color="#f0a514"/><stop offset="1" stop-color="#c97e00"/></radialGradient>
+        <linearGradient id="mtLcdG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#c9d4b6"/><stop offset="1" stop-color="#b3c09d"/></linearGradient>
+        <radialGradient id="mtJackY" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#000"/><stop offset=".5" stop-color="#1a1a1a"/><stop offset=".52" stop-color="#d9a400"/><stop offset="1" stop-color="#9c7500"/></radialGradient>
+    </defs>`;
+    function dmmBody(o) {
+        o = o || {};
+        const { cx, cy, R } = DK;
+        const [lx, ly, lw, lh] = DK.lcd;
+        let s = DMM_DEFS + `<rect x="130" y="20" width="500" height="960" rx="54" fill="#d79f00"/>
+            <rect x="142" y="32" width="476" height="936" rx="46" fill="url(#mtYelG)"/>
+            <rect x="${lx - 16}" y="${ly - 14}" width="${lw + 32}" height="${lh + 28}" rx="12" fill="#3b3b3b"/>
+            <rect x="${lx}" y="${ly}" width="${lw}" height="${lh}" rx="6" fill="url(#mtLcdG)"/>
+            <path d="M${lx} ${ly} L${lx + 150} ${ly} L${lx + 90} ${ly + lh} L${lx} ${ly + lh} Z" fill="#fff" opacity=".1"/>`;
+        // เส้นสีเขียวแบ่งกลุ่มย่านแบบเครื่องจริง
+        const segD = (d0, d1) => { const [x0, y0] = atD(d0, R + 30), [x1, y1] = atD(d1, R + 30); return `<path d="M${x0} ${y0} A${R + 30} ${R + 30} 0 ${d1 - d0 > 180 ? 1 : 0} 1 ${x1} ${y1}" fill="none" stroke="#2e7d32" stroke-width="3.5"/>`; };
+        s += segD(10, 44) + segD(50, 114) + segD(183, 264) + segD(270, 350);
         DSEL.forEach(([id, deg, t]) => {
-            const [x, y] = at(deg, R);
-            s += `<circle cx="${at(deg, R - 34)[0]}" cy="${at(deg, R - 34)[1]}" r="5" fill="#222"/>`;
-            s += `<text x="${x}" y="${y}" font-size="${t.length > 4 ? 20 : 23}" ${F} font-weight="600" fill="#222" text-anchor="middle" dominant-baseline="middle">${t}</text>`;
+            const [x, y] = atD(deg, R);
+            s += `<circle cx="${atD(deg, R - 34)[0]}" cy="${atD(deg, R - 34)[1]}" r="5" fill="#222"/>`;
+            s += `<text data-sel="${id}" x="${x}" y="${y}" font-size="${t.length > 4 ? 20 : 23}" ${F} font-weight="600" fill="#222" text-anchor="middle" dominant-baseline="middle" style="cursor:pointer">${t}</text>`;
         });
-        s += glab(28, 'V~') + glab(82, 'A⎓') + glab(224, 'Ω') + glab(310, 'V⎓');
-        const sel = DSEL.find(a => a[0] === (o.sel || 'off')) || DSEL[0];
-        const [p1, q1] = at(sel[1], 128), [p2, q2] = at(sel[1] + 180, 128);
-        s += `<circle cx="${cx}" cy="${cy}" r="150" fill="#f08a24" stroke="#c96a10" stroke-width="4"/>
-              <path d="M${p2} ${q2} L${p1} ${q1}" stroke="#3949ab" stroke-width="46" stroke-linecap="round"/>
-              <path d="M${at(sel[1], 70)[0]} ${at(sel[1], 70)[1]} L${p1} ${q1}" stroke="#fff" stroke-width="6" stroke-linecap="round"/>`;
+        const glab = (deg, t, r) => { const [x, y] = atD(deg, r || R + 52); return `<text x="${x}" y="${y}" font-size="26" ${F} font-weight="700" fill="#222" text-anchor="middle" dominant-baseline="middle">${t}</text>`; };
+        s += glab(28, 'V~') + `<text x="592" y="300" font-size="26" ${F} font-weight="700" fill="#222" text-anchor="middle">A⎓</text>` + glab(224, 'Ω') + glab(310, 'V⎓');
         // ช่องเสียบทรานซิสเตอร์และขั้วสาย
-        s += `<circle cx="230" cy="790" r="44" fill="#3949ab"/><text x="230" y="866" font-size="20" ${F} fill="#222" text-anchor="middle">NPN · PNP</text>
-              <circle cx="560" cy="760" r="24" fill="#222" stroke="#b58500" stroke-width="7"/><text x="490" y="767" font-size="22" ${F} font-weight="700" fill="#222" text-anchor="middle">10A</text>
-              <circle cx="560" cy="840" r="24" fill="#222" stroke="#b58500" stroke-width="7"/><text x="482" y="847" font-size="22" ${F} font-weight="700" fill="#222" text-anchor="middle">VΩmA</text>
-              <circle cx="560" cy="920" r="24" fill="#222" stroke="#b58500" stroke-width="7"/><text x="488" y="927" font-size="22" ${F} font-weight="700" fill="#222" text-anchor="middle">COM</text>`;
+        s += `<circle cx="230" cy="790" r="46" fill="#3949ab" stroke="#283593" stroke-width="3"/>`;
+        [[-18, -14], [0, -20], [18, -14], [-18, 14], [0, 20], [18, 14]].forEach(([dx, dy]) => { s += `<circle cx="${230 + dx}" cy="${790 + dy}" r="4" fill="#111"/>`; });
+        s += `<text x="230" y="866" font-size="19" ${F} fill="#222" text-anchor="middle">NPN · PNP</text>
+              <g data-jack="a10"><circle cx="${DK.a10[0]}" cy="${DK.a10[1]}" r="27" fill="url(#mtJackY)"/></g><text x="488" y="767" font-size="22" ${F} font-weight="700" fill="#222" text-anchor="middle">10A</text>
+              <g data-jack="vma"><circle cx="${DK.vma[0]}" cy="${DK.vma[1]}" r="27" fill="url(#mtJackY)"/></g><text x="478" y="847" font-size="22" ${F} font-weight="700" fill="#c0392b" text-anchor="middle">VΩmA</text>
+              <g data-jack="com"><circle cx="${DK.com[0]}" cy="${DK.com[1]}" r="27" fill="url(#mtJackY)"/></g><text x="486" y="927" font-size="22" ${F} font-weight="700" fill="#222" text-anchor="middle">COM</text>
+              <text x="300" y="930" font-size="18" ${F} font-weight="700" fill="#222" text-anchor="middle">DIGITAL MULTIMETER</text>`;
+        return s;
+    }
+    function dmmLCD(str) { const [lx, ly] = DK.lcd; return seg7(str, lx + 72, ly + 16, 90); }
+    function dmmKnob(sel) {
+        const { cx, cy } = DK;
+        const it = DSEL.find(a => a[0] === sel) || DSEL[0];
+        return `<g data-drag="knob" style="cursor:grab"><circle cx="${cx}" cy="${cy}" r="152" fill="url(#mtDKnobG)" stroke="#b97800" stroke-width="4"/>
+            <circle cx="${cx}" cy="${cy}" r="132" fill="none" stroke="#e39a00" stroke-width="2"/>
+            <g class="mt-knob" transform="rotate(${it[1]} ${cx} ${cy})">
+              <rect x="${cx - 24}" y="${cy - 132}" width="48" height="264" rx="24" fill="#3949ab"/>
+              <rect x="${cx - 24}" y="${cy - 132}" width="16" height="264" rx="8" fill="#5c6bc0" opacity=".7"/>
+              <path d="M${cx - 12} ${cy - 96} L${cx} ${cy - 122} L${cx + 12} ${cy - 96} Z" fill="#e53935"/>
+            </g></g>`;
+    }
+    function dmm(o) {
+        let s = dmmBody(o) + dmmLCD(o.disp == null ? '000' : o.disp) + dmmKnob(o.sel || 'off');
         let vb = '130 20 500 960';
         if (o.labels) {
             vb = '0 10 760 990';
+            const R = DK.R;
             const call = (n, x, y, tx, ty) => `<path d="M${x} ${y} L${tx} ${ty}" stroke="#d6455d" stroke-width="3"/><circle cx="${x}" cy="${y}" r="24" fill="#d6455d"/><text x="${x}" y="${y + 1}" font-size="24" ${F} font-weight="700" fill="#fff" text-anchor="middle" dominant-baseline="middle">${n}</text>`;
-            const P = id => at(DSEL.find(a => a[0] === id)[1], R + 14);
-            s += call(1, 60, 130, 196, 130) + call(2, 60, 560, 330, 540) + call(3, 60, 790, 186, 790)
-                + call(4, 700, 760, 586, 760) + call(5, 700, 840, 586, 840) + call(6, 700, 920, 586, 920)
-                + call(7, 60, 210, ...at(0, R + 4)) + call(8, 60, 390, ...P('v200')) + call(9, 700, 200, ...P('acv200'))
+            const P = id => atD(DSEL.find(a => a[0] === id)[1], R + 14);
+            s += call(1, 60, 130, 196, 130) + call(2, 60, 560, 330, 540) + call(3, 60, 790, 184, 790)
+                + call(4, 700, 760, 587, 760) + call(5, 700, 840, 587, 840) + call(6, 700, 920, 587, 920)
+                + call(7, 60, 210, ...atD(0, R + 4)) + call(8, 60, 390, ...P('v200')) + call(9, 700, 200, ...P('acv200'))
                 + call(10, 700, 330, ...P('a2000u')) + call(11, 60, 680, ...P('o200k')) + call(12, 700, 560, ...P('a10'))
                 + call(13, 700, 640, ...P('hfe')) + call(14, 600, 700, ...P('diode'));
         }
@@ -299,76 +444,25 @@
         return `<svg class="mt-svg mt-wave" viewBox="0 0 320 120" role="img" aria-label="รูปคลื่น"><path d="M10 60 H310" stroke="#bbb" stroke-dasharray="6 6"/><path d="${d}" fill="none" stroke="#0d6e75" stroke-width="5" stroke-linejoin="round"/></svg>`;
     }
 
-    /* ---------- ฝึกอ่านเข็ม / ซ้อมตารางที่ 2.1 ----------
-       ย่าน → สเกลที่ใช้อ่านและตัวคูณ ตามตารางที่ 2.1 ในหนังสือ */
+    /* ตารางย่าน DCV → [สเกลที่อ่าน, ตัวคูณ] ตามตารางที่ 2.1 หน้า 26 */
     const DCV = { 0.1: [10, 0.01], 0.5: [50, 0.01], 2.5: [250, 0.01], 10: [10, 1], 50: [50, 1], 250: [250, 1], 1000: [10, 100] };
-    const fmt = n => String(Math.round(n * 1000) / 1000);
-    function lab(el) {
-        const SRC = (el.dataset.src || '0.4,1,2.3,4,8.6,12.5,23,29').split(',').map(Number);
-        const RANGES = (el.dataset.ranges || '0.5,2.5,10,50').split(',').map(Number);
-        let V = SRC[0], rng = RANGES[RANGES.length - 1], shown = false, cur = 0;
-        el.classList.add('mt-lab');
-        el.innerHTML = `<div class="ml-face"></div>
-            <div class="ml-ctl">
-              <div class="ml-row"><span class="ml-h">แหล่งจ่าย</span>${SRC.map(v => `<button type="button" data-v="${v}">${v} V</button>`).join('')}<button type="button" data-a="rand" class="alt">สุ่มโจทย์</button></div>
-              <div class="ml-row"><span class="ml-h">ย่าน DCV</span>${RANGES.map(r => `<button type="button" data-r="${r}">${r} V</button>`).join('')}</div>
-              <div class="ml-out" aria-live="polite"></div>
-              <div class="ml-row"><button type="button" data-a="show" class="go">เฉลยค่าที่อ่าน</button></div>
-            </div>`;
-        const out = el.querySelector('.ml-out'), fbox = el.querySelector('.ml-face');
-        function draw() {
-            const over = V > rng;
-            const target = over ? 1.045 : V / rng;
-            el.querySelectorAll('[data-v]').forEach(b => b.classList.toggle('on', +b.dataset.v === V));
-            el.querySelectorAll('[data-r]').forEach(b => b.classList.toggle('on', +b.dataset.r === rng));
-            // เข็มเคลื่อนนุ่ม ๆ จากตำแหน่งเดิม
-            const from = cur, t0 = performance.now();
-            const step = now => {
-                const k = Math.min(1, (now - t0) / 450), e = 1 - Math.pow(1 - k, 3);
-                cur = from + (target - from) * e;
-                fbox.innerHTML = face({ fracs: [cur] });
-                if (k < 1) requestAnimationFrame(step); else fbox.classList.toggle('over', over);
-            };
-            requestAnimationFrame(step);
-            const [full, mul] = DCV[rng];
-            if (over) out.innerHTML = `<b class="bad">เกินย่าน!</b> แรงดัน ${V} V สูงกว่าย่าน ${rng} V เข็มตีเกินสเกล มิเตอร์อาจเสีย<br>ช่องนี้ในตาราง 2.1 ถูกกากบาท ให้เปลี่ยนไปย่านที่สูงกว่า`;
-            else if (!shown) out.innerHTML = `ย่าน ${rng} V อ่านสเกล <b>0–${full}</b>${mul === 1 ? ' อ่านได้โดยตรง' : ` แล้วคูณ <b>${mul}</b>`} · เข็มชี้เท่าไร`;
-            else {
-                const sc = V / rng * full;
-                out.innerHTML = `อ่านสเกล 0–${full} ได้ <b>${fmt(sc)}</b>${mul === 1 ? '' : ` × ${mul}`} = <b class="ok">${fmt(sc * mul)} V</b>`
-                    + (V / rng < 0.2 ? `<br><span class="hint">เข็มบ่ายน้อยมาก อ่านละเอียดไม่ได้ ลองย่านที่ต่ำกว่า (แต่ยังสูงกว่า ${V} V)</span>` : '');
-            }
-        }
-        el.addEventListener('click', e => {
-            const b = e.target.closest('button'); if (!b) return;
-            e.stopPropagation();
-            if (b.dataset.v) { V = +b.dataset.v; shown = false; }
-            else if (b.dataset.r) { rng = +b.dataset.r; shown = false; }
-            else if (b.dataset.a === 'show') shown = true;
-            else if (b.dataset.a === 'rand') {
-                const all = Object.keys(DCV).map(Number);
-                rng = all[Math.floor(Math.random() * all.length)];
-                V = Math.round((5 + Math.floor(Math.random() * 46)) / 50 * rng * 1000) / 1000;   // เข็มตกที่ขีดย่อยเสมอ
-                if (!RANGES.includes(rng)) el.querySelectorAll('[data-r]').forEach(x => x.classList.remove('on'));
-                shown = false;
-            }
-            b.blur(); draw();
-        });
-        el.addEventListener('keydown', e => e.stopPropagation());
-        draw();
-    }
 
     function render(root) {
         (root || document).querySelectorAll('[data-meter]').forEach(el => {
             const k = el.dataset.meter, d = el.dataset;
-            if (k === 'lab') { lab(el); return; }
             const fracs = d.ohm ? d.ohm.split(',').map(v => ohmF(+v)) : (d.frac ? d.frac.split(',').map(Number) : []);
             const o = { fracs, nums: !!d.nums, labels: !!d.labels, sel: d.sel, hl: d.hl, disp: d.disp, kind: d.kind, dmm: !!d.dmm, val: d.val, marks: !!d.marks, wave: d.wave };
+            if (!({ face, analog, dmm, conn, scope, wave })[k]) return;
             el.innerHTML = ({ face, analog, dmm, conn, scope, wave })[k](o);
         });
     }
 
-    g.Meters = { render, face, analog, dmm, conn, scope, wave, ohmF, DCV };
+    g.Meters = {
+        render, face, analog, dmm, conn, scope, wave, ohmF, ac10F, ac10V, DCV,
+        // ชิ้นส่วนสำหรับห้องแล็บเสมือน (vlab.js)
+        faceInner, needle, PIVOT, FACE_T, pt, ang, AK, ASEL, analogBody, analogScrew, analogAdj, analogKnob,
+        DK, DSEL, dmmBody, dmmLCD, dmmKnob, seg7
+    };
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', () => render());
     else render();
 })(window);

@@ -5,8 +5,8 @@
    ภาพหน้าปัดวาดจาก ch02/meters.js (หน้าเว็บต้องโหลดไฟล์นั้น)
    =========================================== */
 (function () {
-    const N = (frac, range) => `<span class="exc" data-meter="face" data-frac="${frac}"></span>ย่าน <b>${range}</b> อ่านได้`;
-    const O = (ohm, range) => `<span class="exc" data-meter="face" data-ohm="${ohm}"></span>ย่าน <b>${range}</b> อ่านได้`;
+    const N = (frac, range) => `<span class="exc" data-meter="face" data-frac="${frac}"></span>ตั้งย่าน <b>${range}</b> เข็มชี้ตามรูป อ่านได้เท่าไร`;
+    const O = (ohm, range) => `<span class="exc" data-meter="face" data-ohm="${ohm}"></span>ตั้งย่าน <b>${range}</b> เข็มชี้ตามรูป อ่านได้เท่าไร`;
     const LINK = ['ต่ออนุกรม', 'ต่อขนาน (คร่อม)', 'ต่อแบบใดก็ได้', 'ไม่ต้องต่อกับวงจร'];
 
     window.EXERCISES = {

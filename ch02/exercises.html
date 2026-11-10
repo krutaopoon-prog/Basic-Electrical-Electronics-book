@@ -71,6 +71,15 @@
         .item { break-inside: avoid; }
         .part h3 { break-after: avoid; }
     }
+    .exc { cursor: zoom-in; }
+    .zoomtip { font-size: 15px; color: var(--ink-soft); }
+    .zbox { position: fixed; inset: 0; z-index: 50; background: rgba(30, 28, 36, .78); display: flex; flex-direction: column; }
+    .zbox .zbar { display: flex; gap: 8px; justify-content: flex-end; padding: 10px 14px; }
+    .zbox .zbar button { font: 500 16px var(--font-display); border: 0; border-radius: 10px; padding: 6px 16px; background: #fff; color: var(--ink); cursor: pointer; }
+    .zbox .zscroll { flex: 1; overflow: auto; padding: 0 14px 14px; }
+    .zbox .zin { margin: 0 auto; background: #fff; border-radius: 14px; padding: 8px; }
+    .zbox .zin .mt-svg { width: 100%; height: auto; }
+    @media print { .zbox, .zoomtip { display: none !important; } }
 </style>
 </head>
 <body class="doc">
@@ -92,6 +101,7 @@
         <span class="chip orange">บทเรียนที่ 2 · หนังสือหน้า 25–41</span>
         <h1 style="margin-top:8px">แบบฝึกหัด: เครื่องวัดไฟฟ้าเบื้องต้น</h1>
         <p class="muted" style="margin:0 0 12px">ชุดที่ 1–2 ตรวจทันที ✓ คือถูก ✗ คือลองใหม่ ทำครบแล้วกด <b>ส่งคำตอบทั้งหมด</b> ท้ายหน้า เพื่อรับใบคะแนน · ชุดที่ 3 เป็นตอนที่ 2 ของหนังสือ เขียนตอบแล้วครูตรวจเอง</p>
+        <p class="zoomtip no-print" style="margin:0 0 12px">ขีดบนหน้าปัดเล็กเกินไป? <b>คลิกที่รูปหน้าปัด</b>เพื่อขยาย · อยากลองวัดเอง ไปที่ <a href="lab.html?m=3">ห้องแล็บมิเตอร์เสมือน</a></p>
         <div class="who">
             <label>ชื่อ-สกุล <input class="name-field" type="text" id="name" autocomplete="name"></label>
             <label>ชั้น <input class="name-field" type="text" id="room"></label>
@@ -305,6 +315,32 @@
         const b = e.target.closest('[data-act]'); if (!b || locked) return;
         const sec = b.closest('.set');
         ({ check: () => checkSet(sec), clear: () => clearSet(sec) })[b.dataset.act]();
+    });
+})();
+</script>
+<script>
+/* คลิกรูปหน้าปัดเพื่อขยายดูขีดย่อย (ซูม + −) */
+(function () {
+    let box = null, z = 1;
+    const size = () => { box.querySelector('.zin').style.width = Math.round(Math.min(window.innerWidth - 40, 1100) * z) + 'px'; };
+    function open(svgHTML) {
+        box = document.createElement('div');
+        box.className = 'zbox';
+        box.innerHTML = '<div class="zbar"><button type="button" data-z="-1">ซูมออก −</button><button type="button" data-z="1">ซูมเข้า +</button><button type="button" data-z="0">ปิด ✕</button></div><div class="zscroll"><div class="zin">' + svgHTML + '</div></div>';
+        document.body.appendChild(box);
+        z = 1; size();
+        box.addEventListener('click', e => {
+            const b = e.target.closest('[data-z]');
+            if (b) { const k = +b.dataset.z; if (!k) close(); else { z = Math.max(1, Math.min(4, z * (k > 0 ? 1.5 : 1 / 1.5))); size(); } return; }
+            if (e.target === box || e.target.classList.contains('zscroll')) close();
+        });
+    }
+    function close() { if (box) { box.remove(); box = null; } }
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') close(); });
+    document.addEventListener('click', e => {
+        const f = e.target.closest('.exc');
+        if (!f || box) return;
+        const svg = f.querySelector('svg'); if (svg) open(svg.outerHTML);
     });
 })();
 </script>
