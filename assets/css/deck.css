@@ -1,0 +1,528 @@
+/* ===========================================
+   FIXED 16:9 STAGE: MANDATORY BASE STYLES
+   (มาจาก frontend-slides/viewport-base.css — สไลด์ออกแบบที่ 1920×1080 แล้วย่อ/ขยายทั้งแผ่น)
+   =========================================== */
+html,
+body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    overflow: hidden;
+    background: var(--stage-bg, #000);
+}
+
+.deck-viewport {
+    position: fixed;
+    inset: 0;
+    overflow: hidden;
+    background: var(--stage-bg, #000);
+}
+
+.deck-stage {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 1920px;
+    height: 1080px;
+    overflow: hidden;
+    transform-origin: 0 0;
+    background: var(--slide-bg, #fff);
+}
+
+.slide {
+    position: absolute;
+    inset: 0;
+    width: 1920px;
+    height: 1080px;
+    overflow: hidden;
+    display: block;
+    visibility: hidden;
+    opacity: 0;
+    pointer-events: none;
+    background: var(--slide-bg, #fff);
+}
+
+.slide.active,
+.slide.visible {
+    visibility: visible;
+    opacity: 1;
+    pointer-events: auto;
+    z-index: 1;
+}
+
+img,
+video,
+canvas,
+svg {
+    max-width: 100%;
+    max-height: 100%;
+}
+
+.deck-controls {
+    position: fixed;
+    left: 50%;
+    bottom: 22px;
+    transform: translateX(-50%);
+    z-index: 1000;
+}
+
+@media print {
+    html,
+    body {
+        width: 1920px;
+        height: auto;
+        overflow: visible;
+        background: #fff;
+    }
+
+    .deck-viewport {
+        position: static;
+        overflow: visible;
+        background: #fff;
+    }
+
+    .deck-stage {
+        position: static;
+        width: auto;
+        height: auto;
+        transform: none !important;
+        background: none;
+    }
+
+    .slide {
+        position: relative;
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        pointer-events: auto !important;
+        width: 1920px;
+        height: 1080px;
+        break-after: page;
+        page-break-after: always;
+    }
+
+    .slide:last-child {
+        break-after: auto;
+        page-break-after: auto;
+    }
+
+    .deck-controls {
+        display: none !important;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.2s !important;
+    }
+}
+
+/* ===========================================
+   DECK THEME — โทนขาวอบอุ่น
+   =========================================== */
+:root {
+    --stage-bg: #e9e0d0;
+    --slide-bg: var(--paper);
+    --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+    --pad-x: 110px;
+}
+
+.slide {
+    font-family: var(--font-body);
+    color: var(--ink);
+    font-size: 42px;
+    line-height: 1.55;
+    --sec: var(--teal);
+    --sec-soft: var(--teal-soft);
+    background:
+        radial-gradient(circle at 1880px 40px, var(--sec-soft) 0 260px, transparent 261px),
+        radial-gradient(rgba(42, 39, 51, .09) 1.6px, transparent 1.6px) 0 0 / 34px 34px,
+        var(--paper);
+}
+.slide.sec-0 { --sec: var(--teal); --sec-soft: var(--teal-soft); }
+.slide.sec-1 { --sec: var(--orange); --sec-soft: var(--orange-soft); }
+.slide.sec-2 { --sec: var(--teal); --sec-soft: var(--teal-soft); }
+.slide.sec-3 { --sec: var(--blue); --sec-soft: var(--blue-soft); }
+.slide.sec-4 { --sec: #0f8a6c; --sec-soft: #d5efe6; }
+
+/* --- กรอบสไลด์ (chrome) --- */
+.chrome {
+    position: absolute;
+    left: var(--pad-x);
+    right: var(--pad-x);
+    font-family: var(--font-display);
+    font-size: 24px;
+    color: var(--ink-soft);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.chrome.top { top: 44px; }
+.chrome.bottom { bottom: 36px; font-size: 22px; }
+.chrome .tag {
+    background: var(--sec-soft);
+    color: var(--sec);
+    padding: 6px 22px;
+    border-radius: 999px;
+    font-weight: 500;
+    filter: saturate(1.1);
+}
+.chrome .pg { font-family: var(--font-mono); font-size: 22px; }
+
+/* --- เนื้อหาหลัก --- */
+.body {
+    position: absolute;
+    left: var(--pad-x);
+    right: var(--pad-x);
+    top: 130px;
+    bottom: 100px;
+    display: flex;
+    flex-direction: column;
+}
+.body.center { justify-content: center; }
+
+.kicker {
+    font-family: var(--font-display);
+    color: var(--sec);
+    font-size: 30px;
+    font-weight: 500;
+    letter-spacing: .5px;
+    margin: 0 0 4px;
+}
+h2.title {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: 76px;
+    line-height: 1.22;
+    margin: 0 0 34px;
+    color: var(--ink);
+}
+h2.title .en { color: var(--ink-soft); font-weight: 300; font-size: .7em; }
+.lead { font-size: 50px; line-height: 1.5; margin: 0 0 24px; }
+p { margin: 0 0 22px; }
+.small { font-size: 35px; }
+.tiny { font-size: 27px; color: var(--ink-soft); }
+.mono { font-family: var(--font-mono); }
+.hl { background: linear-gradient(transparent 58%, var(--sun-soft) 58%); padding: 0 4px; }
+.c-sec { color: var(--sec); }
+.c-orange { color: var(--orange); }
+.c-teal { color: var(--teal); }
+.c-blue { color: var(--blue); }
+.c-rose { color: var(--rose); }
+.c-green { color: var(--green); }
+b, strong { font-weight: 700; }
+
+ul.pts { list-style: none; padding: 0; margin: 0; }
+ul.pts > li { position: relative; padding-left: 54px; margin: 0 0 20px; }
+ul.pts > li::before {
+    content: '';
+    position: absolute;
+    left: 6px;
+    top: .52em;
+    width: 22px;
+    height: 22px;
+    border-radius: 7px;
+    background: var(--sec);
+    transform: rotate(45deg) scale(.8);
+}
+ol.steps { list-style: none; padding: 0; margin: 0; counter-reset: st; }
+ol.steps > li { counter-increment: st; position: relative; padding-left: 82px; margin: 0 0 24px; min-height: 60px; }
+ol.steps > li::before {
+    content: counter(st);
+    position: absolute;
+    left: 0;
+    top: -2px;
+    width: 58px;
+    height: 58px;
+    border-radius: 50%;
+    background: var(--sec);
+    color: #fff;
+    font: 500 32px/58px var(--font-display);
+    text-align: center;
+}
+
+/* --- กริด / การ์ด --- */
+.row { display: flex; gap: 44px; align-items: stretch; }
+.row.center { align-items: center; }
+.row > * { flex: 1; min-width: 0; }
+.row > .grow2 { flex: 2; }
+.grid { display: grid; gap: 30px; }
+.g2 { grid-template-columns: 1fr 1fr; }
+.g3 { grid-template-columns: repeat(3, 1fr); }
+.g4 { grid-template-columns: repeat(4, 1fr); }
+
+.box {
+    background: #fff;
+    border: 2px solid var(--line);
+    border-radius: 28px;
+    padding: 30px 36px;
+    box-shadow: 0 6px 0 var(--cream-deep);
+}
+.box.tint { background: var(--sec-soft); border-color: transparent; box-shadow: none; }
+.box.sun { background: var(--sun-soft); border-color: transparent; box-shadow: none; }
+.box.rose { background: var(--rose-soft); border-color: transparent; box-shadow: none; }
+.box.green { background: var(--green-soft); border-color: transparent; box-shadow: none; }
+.box.blue { background: var(--blue-soft); border-color: transparent; box-shadow: none; }
+.box.orange { background: var(--orange-soft); border-color: transparent; box-shadow: none; }
+.box h3 {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: 44px;
+    margin: 0 0 10px;
+    color: var(--sec);
+    line-height: 1.3;
+}
+.box p:last-child { margin-bottom: 0; }
+.icon { font-size: 64px; line-height: 1; margin-bottom: 12px; }
+
+/* --- ป้าย "เสริม" และเลขอ้างอิง --- */
+.extra {
+    display: inline-block;
+    font: 500 24px var(--font-display);
+    color: #8a5d00;
+    background: var(--sun-soft);
+    border: 2px solid var(--sun);
+    border-radius: 999px;
+    padding: 0 16px;
+    vertical-align: middle;
+    margin-left: 10px;
+    line-height: 1.5;
+}
+sup.ref { font-size: .55em; line-height: 0; }
+sup.ref a { color: var(--sec); text-decoration: none; font-family: var(--font-mono); font-weight: 600; }
+.src {
+    position: absolute;
+    left: 0;
+    right: 200px;
+    bottom: -66px;
+    font-size: 22px;
+    color: var(--ink-soft);
+    line-height: 1.35;
+}
+.src a { color: inherit; }
+
+/* --- ตารางทั่วไป --- */
+table.t { border-collapse: separate; border-spacing: 0; font-size: 37px; }
+table.t th, table.t td { padding: 12px 26px; text-align: center; border-bottom: 2px solid var(--line); }
+table.t th { font-family: var(--font-display); font-weight: 500; background: var(--sec-soft); color: var(--ink); }
+table.t th:first-child { border-top-left-radius: 18px; }
+table.t th:last-child { border-top-right-radius: 18px; }
+table.t td { background: #fff; }
+table.t.left td, table.t.left th { text-align: left; }
+table.t td.mono, table.t .mono { font-family: var(--font-mono); }
+table.t.compact th, table.t.compact td { padding: 8px 20px; font-size: 30px; }
+table.t.xs th, table.t.xs td { padding: 2px 10px; font-size: 19px; line-height: 1.28; }
+table.t tr.hit td { background: var(--sun-soft); }
+
+/* --- ตารางความจริง --- */
+table.truth { border-collapse: collapse; font-family: var(--font-mono); font-size: 46px; }
+table.truth th, table.truth td { padding: 6px 34px; text-align: center; border-bottom: 2px solid var(--line); }
+table.truth th { font-family: var(--font-display); font-weight: 500; font-size: 32px; color: var(--ink-soft); }
+table.truth th.q, table.truth td.q { background: var(--sec-soft); font-weight: 700; }
+table.truth td.q.one { color: var(--orange); }
+
+/* --- บันไดการหาร (แปลงฐาน 10 -> ฐานอื่น) --- */
+.ladder { font-family: var(--font-mono); font-size: 42px; }
+.lrow { display: grid; grid-template-columns: 230px 60px 170px 130px 1fr; align-items: center; padding: 4px 0; border-bottom: 2px dashed var(--line); }
+.lrow.h { font-family: var(--font-display); font-size: 28px; color: var(--ink-soft); border-bottom: 2px solid var(--line); }
+.lrow .r { color: var(--orange); font-weight: 700; text-align: center; background: var(--orange-soft); border-radius: 12px; }
+.lrow.h .r { background: none; color: var(--ink-soft); font-weight: 400; }
+.lrow .note { font-family: var(--font-body); font-size: 26px; color: var(--ink-soft); padding-left: 22px; }
+.ladder.narrow .lrow { grid-template-columns: 190px 50px 120px 110px 1fr; font-size: 38px; }
+.readup { font: 500 28px var(--font-display); color: var(--orange); margin-top: 10px; }
+.answer {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 54px;
+    font-weight: 700;
+    background: var(--sun-soft);
+    border: 3px dashed var(--sun);
+    border-radius: 20px;
+    padding: 8px 32px;
+}
+sub { font-size: .55em; }
+
+/* --- ตารางน้ำหนัก (ฐานใด ๆ -> ฐาน 10) --- */
+table.w { border-collapse: separate; border-spacing: 8px; font-family: var(--font-mono); font-size: 38px; }
+table.w td, table.w th { padding: 10px 22px; text-align: center; border-radius: 14px; }
+table.w th { font-family: var(--font-display); font-weight: 500; font-size: 30px; text-align: left; color: var(--ink-soft); background: none; }
+table.w .wt td { background: var(--orange-soft); }
+table.w .dg td { background: var(--blue-soft); font-weight: 700; }
+table.w .pr td { background: #fff; border: 2px solid var(--line); font-size: 32px; }
+
+/* --- กลุ่มบิต (ฐาน 2 <-> 16) --- */
+.nibbles { display: flex; gap: 28px; font-family: var(--font-mono); }
+.nib { text-align: center; }
+.nib .b { font-size: 50px; background: var(--blue-soft); border-radius: 18px; padding: 6px 22px; letter-spacing: 4px; }
+.nib .arrow { font-size: 34px; color: var(--ink-soft); line-height: 1.4; }
+.nib .h { font-size: 60px; font-weight: 700; color: var(--orange); }
+
+/* --- เกต --- */
+.gate-svg { width: 500px; height: 250px; }
+.gate-svg path, .gate-svg circle { stroke: var(--ink); stroke-width: 4; fill: var(--sec-soft); stroke-linejoin: round; }
+.gate-svg line, .gate-svg .wire { stroke: var(--ink); stroke-width: 4; fill: none; stroke-linecap: round; }
+.gate-svg line.hi { stroke: var(--hi); stroke-width: 6; }
+.gate-svg line.lo { stroke: var(--lo); }
+.gate-svg text { font: 600 15px var(--font-mono); fill: var(--ink-soft); stroke: none; }
+.gate-svg.big { width: 520px; height: 260px; }
+.gate-svg.mini { width: 300px; height: 150px; }
+
+/* --- ตัวจำลองเกต --- */
+.sim { font-family: var(--font-display); }
+.sim-gates { display: flex; gap: 14px; margin-bottom: 30px; flex-wrap: wrap; }
+.sim-gates button, .sim-in {
+    font: 500 32px var(--font-display);
+    border: 3px solid var(--line);
+    background: #fff;
+    color: var(--ink);
+    border-radius: 18px;
+    padding: 8px 28px;
+    cursor: pointer;
+}
+.sim-gates button.on { background: var(--sec); color: #fff; border-color: var(--sec); }
+.sim-board { display: flex; align-items: center; gap: 10px; }
+.sim-ins { display: flex; flex-direction: column; gap: 96px; }
+.sim-ins.single { gap: 0; justify-content: center; }
+.sim-ins.single [data-in=b] { display: none; }
+.sim-in { font-family: var(--font-mono); width: 190px; font-size: 36px; }
+.sim-in.hi { background: var(--orange); color: #fff; border-color: var(--orange); }
+.sim-svg { width: 640px !important; height: 320px !important; }
+.sim-out { text-align: center; width: 220px; }
+.sim-lamp {
+    width: 130px; height: 130px; margin: 0 auto 14px; border-radius: 50%;
+    background: #ddd6e2; border: 6px solid #c9c1cf; transition: all .25s;
+}
+.sim-lamp.hi { background: radial-gradient(circle at 40% 35%, #fff6c9, var(--sun) 45%, var(--orange)); border-color: var(--orange); box-shadow: 0 0 60px 10px rgba(247, 183, 51, .6); }
+.sim-q { font: 700 40px var(--font-mono); }
+.sim-expr { margin-top: 26px; font: 500 40px var(--font-mono); color: var(--sec); }
+
+/* --- บล็อกไดอะแกรม --- */
+.diagram svg { width: 100%; height: auto; }
+.diagram .blk rect { fill: #fff; stroke: var(--sec); stroke-width: 4; }
+.diagram .blk.main rect { fill: var(--sec-soft); }
+.diagram .blk text { font: 500 34px var(--font-display); fill: var(--ink); text-anchor: middle; dominant-baseline: middle; }
+.diagram .blk text.sub { font: 400 24px var(--font-body); fill: var(--ink-soft); }
+.diagram .arr { stroke: var(--ink); stroke-width: 5; fill: none; marker-end: url(#ah); }
+.diagram .arrow-head { fill: var(--ink); }
+
+/* --- รูปภาพ --- */
+.photo { background: #fff; border: 2px solid var(--line); border-radius: 28px; padding: 18px; box-shadow: 0 8px 0 var(--cream-deep); text-align: center; }
+.photo img { display: block; margin: 0 auto; border-radius: 16px; object-fit: contain; }
+.photo .cap { font-size: 26px; color: var(--ink-soft); margin-top: 10px; line-height: 1.35; }
+.photo .credit { font-size: 18px; color: var(--ink-soft); }
+
+/* --- ปก --- */
+.slide.cover {
+    background:
+        radial-gradient(circle at 1650px 300px, var(--teal-soft) 0 420px, transparent 421px),
+        radial-gradient(circle at 1380px 820px, var(--orange-soft) 0 250px, transparent 251px),
+        radial-gradient(circle at 1800px 950px, var(--sun-soft) 0 140px, transparent 141px),
+        radial-gradient(rgba(42, 39, 51, .09) 1.6px, transparent 1.6px) 0 0 / 34px 34px,
+        var(--paper);
+}
+.cover .chapter { font: 500 40px var(--font-display); color: var(--orange); letter-spacing: 2px; }
+.cover h1 { font: 500 112px/1.2 var(--font-display); margin: 18px 0 30px; max-width: 1240px; }
+.cover .sub { font-size: 40px; color: var(--ink-soft); }
+.cover .bits { position: absolute; right: 150px; top: 230px; font: 700 54px/1.5 var(--font-mono); color: var(--teal); opacity: .9; text-align: right; }
+.cover .bits span { color: var(--orange); }
+
+/* --- ตัวคั่นหัวข้อ --- */
+.slide.section .big-no {
+    position: absolute;
+    right: 90px;
+    bottom: 110px;
+    font: 600 380px/1 var(--font-display);
+    color: transparent;
+    -webkit-text-stroke: 6px var(--sec);
+    opacity: .35;
+}
+.slide.section h2 { font: 500 110px/1.2 var(--font-display); margin: 0 0 24px; }
+.slide.section .label { font: 500 40px var(--font-display); color: var(--sec); }
+.slide.section .lead { color: var(--ink-soft); max-width: 1000px; }
+
+/* ===========================================
+   ANIMATION — เผยทีละส่วนเมื่อสไลด์แสดง
+   =========================================== */
+.reveal {
+    opacity: 0;
+    transform: translateY(26px);
+    transition: opacity .6s var(--ease-out), transform .6s var(--ease-out);
+}
+.slide.visible .reveal { opacity: 1; transform: none; }
+.slide.visible .reveal.d1 { transition-delay: .08s; }
+.slide.visible .reveal.d2 { transition-delay: .18s; }
+.slide.visible .reveal.d3 { transition-delay: .28s; }
+.slide.visible .reveal.d4 { transition-delay: .38s; }
+.slide.visible .reveal.d5 { transition-delay: .48s; }
+
+/* fragment: ซ่อนไว้ กด → / Space เพื่อแสดงทีละขั้น */
+.frag { opacity: 0; transform: translateY(14px); transition: opacity .4s var(--ease-out), transform .4s var(--ease-out); }
+.frag.shown { opacity: 1; transform: none; }
+.frag.shown.flash { animation: flash 1s var(--ease-out); }
+@keyframes flash { 0% { background-color: var(--sun-soft); } 100% { background-color: transparent; } }
+
+@media print {
+    .reveal, .frag { opacity: 1 !important; transform: none !important; }
+}
+
+/* ===========================================
+   CONTROLS (อยู่นอกสไลด์)
+   =========================================== */
+.deck-controls {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255, 253, 248, .94);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 5px 8px;
+    box-shadow: 0 4px 18px rgba(42, 39, 51, .12);
+    font-family: var(--font-display);
+    transition: opacity .3s;
+}
+.deck-controls.idle { opacity: 0; pointer-events: none; }
+.deck-controls button {
+    border: none;
+    background: transparent;
+    color: var(--ink);
+    font: 500 15px var(--font-display);
+    min-width: 40px;
+    height: 36px;
+    border-radius: 999px;
+    cursor: pointer;
+    padding: 0 10px;
+}
+.deck-controls button:hover { background: var(--cream-deep); }
+.deck-controls .count { font: 14px var(--font-mono); color: var(--ink-soft); min-width: 70px; text-align: center; }
+.deck-progress { position: fixed; left: 0; top: 0; height: 4px; background: var(--orange); z-index: 1001; transition: width .3s var(--ease-out); }
+
+.toc {
+    position: fixed;
+    inset: 0;
+    background: rgba(42, 39, 51, .45);
+    z-index: 2000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+}
+.toc.open { display: flex; }
+.toc-panel {
+    background: var(--paper);
+    border-radius: 20px;
+    width: min(760px, 100%);
+    max-height: 86vh;
+    overflow: auto;
+    padding: 20px 22px;
+    font-family: var(--font-body);
+    color: var(--ink);
+}
+.toc-panel h3 { font: 500 22px var(--font-display); margin: 0 0 10px; }
+.toc-panel ol { margin: 0; padding-left: 2.6em; font-size: 16px; line-height: 1.7; }
+.toc-panel li { cursor: pointer; }
+.toc-panel li:hover { color: var(--teal); }
+.toc-panel li.cur { color: var(--orange); font-weight: 700; }
+.toc-panel li.sec { margin-top: 8px; font-family: var(--font-display); font-weight: 500; }

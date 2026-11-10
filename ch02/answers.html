@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>เฉลยสำหรับครู บทที่ 2</title>
+<meta name="description" content="เฉลยแบบฝึกหัด แบบทดสอบ และใบปฏิบัติงาน บทที่ 2 สำหรับครู (ต้องใช้รหัสครู)">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;500&family=Sarabun:wght@400;700&family=Prompt:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/theme.css">
+<link rel="stylesheet" href="meters.css">
+<style>
+    .gate-box { max-width: 460px; margin: 40px auto; text-align: center; }
+    .gate-box input { width: 100%; margin: 12px 0; font-family: var(--font-body); }
+    .ans-q { padding: 10px 0; border-bottom: 1px dashed var(--line); }
+    .ans-q .stem b.n { font-family: var(--font-display); color: var(--teal); }
+    .ans-q ol { list-style: none; padding: 0; margin: 4px 0; display: grid; grid-template-columns: 1fr 1fr; gap: 2px 14px; }
+    .ans-q li.key { color: var(--green); font-weight: 700; }
+    .ans-q li.key::after { content: ' ✓'; }
+    .ex-row { display: grid; grid-template-columns: 2.2em 1fr 1.2fr; gap: 10px; padding: 8px 0; border-bottom: 1px dashed var(--line); align-items: start; }
+    .ex-row .a { font-weight: 700; color: var(--green); }
+    .ex-row .how { font-size: 15.5px; color: var(--ink-soft); }
+    .keytable { border-collapse: collapse; width: 100%; font-family: var(--font-mono); }
+    .keytable td, .keytable th { border: 1px solid var(--line); text-align: center; padding: 4px; }
+    .keytable th { background: var(--cream-deep); font-family: var(--font-display); font-weight: 500; }
+    .keytable.ws-key { font-family: var(--font-body); font-size: 15px; margin-bottom: 10px; }
+    .keytable.ws-key td { text-align: left; }
+    .ans-q .qc { display: block; max-width: 200px; }
+    .ex-row .exc { display: block; max-width: 300px; }
+    .ex-row.w { grid-template-columns: 2.2em 1fr; }
+    .ex-row.w .a { font-weight: 400; color: var(--ink); background: var(--green-soft); border-radius: 10px; padding: 6px 12px; margin-top: 6px; }
+    #exKey h3 .exc { max-width: 360px; font-weight: 400; margin-top: 6px; }
+    .keytable.ws-key svg.sym.ws { width: 84px; height: 56px; }
+    .keytable.ws-key td:first-child { text-align: center; width: 3em; }
+    @media (max-width: 620px) { .ex-row { grid-template-columns: 2em 1fr; } .ex-row .how { grid-column: 2; } .ans-q ol { grid-template-columns: 1fr; } }
+    @media print {
+        body[data-only="quiz"] #exKey, body[data-only="ex"] #quizKey, body[data-only="ex"] #quickKey { display: none; }
+        body[data-only="quiz"] #wsKey, body[data-only="ex"] #wsKey { display: none; }
+        #wsKey { break-before: page; }
+        #exKey { break-before: page; }
+        body[data-only="ex"] #exKey { break-before: auto; }
+        .ex-row, .ans-q { break-inside: avoid; }
+        .ex-row .how { font-size: 11pt; }
+    }
+</style>
+</head>
+<body class="doc">
+<div class="doc-wrap">
+    <nav class="topbar no-print">
+        <a href="../index.html">← หน้าแรก</a> · <a href="exercises.html">แบบฝึกหัด</a> · <a href="quiz.html">แบบทดสอบ</a>
+    </nav>
+
+    <section class="card gate-box" id="gate">
+        <h1>เฉลยสำหรับครู</h1>
+        <p class="muted">บทที่ 2 เครื่องวัดไฟฟ้าเบื้องต้น</p>
+        <input type="password" id="pw" placeholder="รหัสครู" autocomplete="off" aria-label="รหัสครู">
+        <button class="btn" type="button" id="open">เปิดเฉลย</button>
+        <p id="msg" style="min-height:1.6em"></p>
+    </section>
+
+    <div id="content" hidden>
+        <header class="card no-print">
+            <h1>เฉลย บทที่ 2</h1>
+            <div class="btn-row">
+                <button class="btn" type="button" data-print="all">พิมพ์เฉลยทั้งหมด</button>
+                <button class="btn ghost" type="button" data-print="quiz">เฉพาะแบบทดสอบ</button>
+                <button class="btn ghost" type="button" data-print="ex">เฉพาะแบบฝึกหัด</button>
+            </div>
+        </header>
+        <section class="card" id="quickKey"></section>
+        <section class="card" id="quizKey"></section>
+        <section class="card" id="exKey"></section>
+        <section class="card" id="wsKey" hidden></section>
+    </div>
+</div>
+
+<script src="../assets/js/common.js"></script>
+<script src="meters.js"></script>
+<script src="quiz-data.js"></script>
+<script src="exercises-data.js"></script>
+<script src="answers.enc.js"></script>
+<script>
+/* ===========================================
+   หน้าเฉลยครู: ถอดรหัส answers.enc.js ด้วยรหัสครู แล้วสร้างเฉลยจากไฟล์โจทย์
+   =========================================== */
+(function () {
+    const C = LessonCommon, TH = ['ก', 'ข', 'ค', 'ง'];
+
+
+    function render(key) {
+        const Q = QUIZ.questions;
+        // ตารางเฉลยย่อ
+        const cells = Q.map((q, i) => `<td>${i + 1}</td><td><b>${TH[key.quiz[q.id].correct]}</b></td>`);
+        let rows = '';
+        for (let i = 0; i < 5; i++) rows += `<tr>${cells[i]}${cells[i + 5]}</tr>`;
+        document.getElementById('quickKey').innerHTML = `<h2>เฉลยย่อ แบบทดสอบ 10 ข้อ (หนังสือหน้า 40–41 ตอนที่ 1)</h2>
+            <table class="keytable"><tr><th>ข้อ</th><th>ตอบ</th><th>ข้อ</th><th>ตอบ</th></tr>${rows}</table>
+            <p class="muted" style="margin:8px 0 0">หนังสือไม่มีเฉลย เฉลยนี้ครูร่างจากเนื้อหาในหนังสือ ข้อ 9 สวิตช์ชี้ที่ตำแหน่งไดโอด (หมายเลข 14 ในรูปที่ 2.13)</p>`;
+
+        document.getElementById('quizKey').innerHTML = '<h2>เฉลยแบบทดสอบ พร้อมคำอธิบาย</h2>' + Q.map((q, i) => {
+            const k = key.quiz[q.id];
+            return `<div class="ans-q"><div class="stem"><b class="n">${i + 1}.</b> ${q.q} <span class="chip">${q.topic}</span></div>
+                <ol>${q.choices.map((c, j) => `<li class="${j === k.correct ? 'key' : ''}">${TH[j]}. ${c}</li>`).join('')}</ol>
+                <div class="note">${k.explain}</div></div>`;
+        }).join('');
+
+        let html = '<h2>เฉลยแบบฝึกหัด</h2>';
+        EXERCISES.sets.forEach(set => {
+            html += `<h2 style="margin-top:18px;color:var(--orange)">${set.title}</h2>`;
+            set.parts.forEach(p => {
+                html += `<h3 style="color:var(--teal)">${p.title}</h3>`;
+                p.items.forEach((it, i) => {
+                    const a = key.ex[it.id];
+                    let q, ans = C.esc(a.answer);
+                    if (it.type === 'write') {
+                        html += `<div class="ex-row w"><span class="muted">${i + 1}.</span><div>${it.q}<div class="a">${C.esc(a.answer)}</div><div class="how">${C.esc(a.explain || '')}</div></div></div>`;
+                        return;
+                    }
+                    if (it.type === 'conv') q = `<span class="mono">${C.esc(it.value)}<sub>${it.from}</sub></span> → ฐาน ${it.to}`;
+                    else if (it.type === 'tt') {
+                        const rows = it.gate === 'NOT' ? [[0], [1]] : [[0, 0], [0, 1], [1, 0], [1, 1]];
+                        q = `<b>${it.gate} gate</b>`;
+                        ans = `<table class="tt"><tr>${it.gate === 'NOT' ? '<th>A</th>' : '<th>A</th><th>B</th>'}<th>Q</th></tr>${rows.map((r, j) => `<tr>${r.map(v => `<td>${v}</td>`).join('')}<td><b>${a.answer[j]}</b></td></tr>`).join('')}</table>`;
+                    } else q = it.q;
+                    if (it.type === 'conv') ans += `<sub>${it.to}</sub>`;
+                    html += `<div class="ex-row"><span class="muted">${i + 1}.</span><div>${q}<div class="a">ตอบ: ${ans}</div></div><div class="how">${a.explain || ''}</div></div>`;
+                });
+            });
+        });
+        document.getElementById('exKey').innerHTML = html;
+        Meters.render(document.getElementById('content'));
+
+        // เฉลยใบงาน (มีเมื่อรันสคริปต์เข้ารหัสรุ่นที่ส่ง ws ต่อมา)
+        const wsBox = document.getElementById('wsKey');
+        if (key.ws) {
+            wsBox.innerHTML = `<h2>${C.esc(key.ws.title)}</h2>` + key.ws.parts.map(p => `
+                <h3 style="color:var(--teal)">${C.esc(p.title)}</h3>
+                <table class="keytable ws-key"><tr>${p.head.map(h => `<th>${C.esc(h)}</th>`).join('')}</tr>
+                ${p.rows.map(r => `<tr>${r.map(c => `<td>${C.esc(c)}</td>`).join('')}</tr>`).join('')}</table>`).join('')
+                + (key.ws.note ? `<div class="note">${C.esc(key.ws.note)}</div>` : '');
+            wsBox.hidden = false;
+        } else wsBox.hidden = true;
+    }
+
+    async function open() {
+        const msg = document.getElementById('msg');
+        msg.textContent = 'กำลังถอดรหัส…';
+        try {
+            const key = await C.decryptAnswers(window.ANSWERS_ENC, document.getElementById('pw').value);
+            render(key);
+            document.getElementById('gate').hidden = true;
+            document.getElementById('content').hidden = false;
+        } catch (e) {
+            msg.innerHTML = e.message === 'NO_CRYPTO'
+                ? '<span class="bad">เบราว์เซอร์นี้ไม่รองรับการถอดรหัส ลองเปิดผ่าน https หรือ Chrome รุ่นใหม่</span>'
+                : '<span class="bad">รหัสไม่ถูกต้อง</span>';
+        }
+    }
+
+    document.getElementById('open').addEventListener('click', open);
+    document.getElementById('pw').addEventListener('keydown', e => { if (e.key === 'Enter') open(); });
+    document.addEventListener('click', e => {
+        const b = e.target.closest('[data-print]'); if (!b) return;
+        if (b.dataset.print === 'all') delete document.body.dataset.only; else document.body.dataset.only = b.dataset.print;
+        window.print();
+    });
+    window.addEventListener('afterprint', () => delete document.body.dataset.only);
+})();
+</script>
+</body>
+</html>

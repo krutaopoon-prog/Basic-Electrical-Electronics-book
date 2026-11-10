@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>แบบทดสอบ บทที่ 2</title>
+<meta name="description" content="แบบทดสอบก่อนเรียน/หลังเรียน บทที่ 2 เครื่องวัดไฟฟ้าเบื้องต้น 10 ข้อ จากแบบฝึกหัดในหนังสือเรียน วิชางานไฟฟ้าและอิเล็กทรอนิกส์เบื้องต้น">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;500&family=Sarabun:wght@400;700&family=Prompt:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/theme.css">
+<link rel="stylesheet" href="meters.css">
+<style>
+    .who { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 10px; }
+    .who label { display: flex; flex-direction: column; font-size: 15px; color: var(--ink-soft); gap: 4px; }
+    .who input { width: 100%; }
+    .modes { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 12px; }
+    .modes label { border: 1.5px solid var(--line); border-radius: 12px; padding: 8px 16px; cursor: pointer; background: #fff; font-family: var(--font-display); }
+    .modes input { margin-right: 6px; }
+    .modes label:has(input:checked) { border-color: var(--teal); background: var(--teal-soft); }
+    .q { padding: 14px 0; border-bottom: 1px dashed var(--line); }
+    .q:last-child { border-bottom: none; }
+    .q .stem { font-weight: 700; margin-bottom: 6px; }
+    .q .qc { display: block; max-width: 240px; margin: 6px 0 2px 1.6em; font-weight: 400; }
+    .q .stem .n { font-family: var(--font-display); color: var(--teal); margin-right: 6px; }
+    .q .res { margin-left: 8px; }
+    .locked .choice { opacity: .8; }
+    .btn:disabled { opacity: .45; cursor: not-allowed; }
+    .choices { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 14px; }
+    .choice { display: flex; gap: 8px; align-items: flex-start; border: 1.5px solid var(--line); background: #fff; border-radius: 12px; padding: 7px 12px; cursor: pointer; }
+    .choice:has(input:checked) { border-color: var(--teal); background: var(--teal-soft); }
+    .choice input { margin-top: 6px; }
+    .choice .l { font-family: var(--font-display); color: var(--ink-soft); }
+    .choice.key { border-color: var(--green); background: var(--green-soft); }
+    .explain { display: none; margin-top: 8px; }
+    .reveal-on .explain { display: block; }
+    .result { font-family: var(--font-display); }
+    .result .big { font-size: 46px; color: var(--teal); }
+    .compare { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 8px; }
+    .compare div { background: var(--cream); border-radius: 12px; padding: 8px 16px; }
+    .sheet-head { border: 1.5px solid #000; padding: 8px 12px; margin-bottom: 6mm; font-size: 12.5pt; }
+    .sheet-head .line { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 4px; }
+    .answer-sheet table { border-collapse: collapse; width: 100%; font-size: 12pt; }
+    .answer-sheet td, .answer-sheet th { border: 1px solid #000; padding: 1.4mm 2mm; text-align: center; }
+    .teacher { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+    @media (max-width: 620px) { .who { grid-template-columns: 1fr 1fr; } .who label:first-child { grid-column: 1 / -1; } .choices { grid-template-columns: 1fr; } }
+    @media print {
+        .q .qc { max-width: 38mm; margin: 1mm 0 0 6mm; }
+        .choices { grid-template-columns: 1fr 1fr; gap: 1mm 8mm; }
+        .choice { border: none; padding: 0.6mm 0; background: none !important; }
+        .choice input { display: none; }
+        .q { padding: 2.2mm 0; border-bottom: none; }
+        .q .res, .explain, #result, .who, .modes { display: none !important; }
+        .answer-sheet { break-before: page; }
+    }
+</style>
+</head>
+<body class="doc">
+<div class="doc-wrap">
+    <nav class="topbar no-print">
+        <a href="../index.html">← หน้าแรก</a> · <a href="slides.html">สไลด์</a> · <a href="exercises.html">แบบฝึกหัด</a>
+        <span class="spacer"></span>
+        <a href="answers.html">สำหรับครู</a>
+    </nav>
+
+    <div class="sheet-head print-only">
+        <b>แบบทดสอบ บทที่ 2 เครื่องวัดไฟฟ้าเบื้องต้น</b> · ปรนัย 4 ตัวเลือก 10 ข้อ (10 คะแนน) · จากหนังสือหน้า 40–41
+        <div class="line"><span>ชื่อ-สกุล ......................................................</span><span>ชั้น ...............</span><span>เลขที่ ........</span></div>
+        <div class="line"><span>☐ ก่อนเรียน &nbsp; ☐ หลังเรียน</span><span>วันที่ ......../......../........</span><span>คะแนน ............ / 10</span></div>
+        <div style="margin-top:4px">คำชี้แจง: เลือกคำตอบที่ถูกต้องที่สุดเพียงข้อเดียว แล้วทำเครื่องหมาย ✗ ในกระดาษคำตอบ</div>
+    </div>
+
+    <header class="card no-print">
+        <span class="chip orange">บทเรียนที่ 2 · หนังสือหน้า 40–41</span>
+        <h1 style="margin-top:8px">แบบทดสอบ 10 ข้อ</h1>
+        <p class="muted" style="margin:0 0 12px">แบบฝึกหัดบทเรียนที่ 2 ตอนที่ 1 ในหนังสือ ข้อละ 1 คะแนน · ใช้ชุดเดียวกันทั้งก่อนเรียนและหลังเรียน · ทำบนเว็บแล้วค่อยเขียนลงหนังสือ</p>
+        <div class="who">
+            <label>ชื่อ-สกุล <input class="name-field" type="text" id="name" autocomplete="name"></label>
+            <label>ชั้น <input class="name-field" type="text" id="room"></label>
+            <label>เลขที่ <input class="name-field" type="text" id="no" inputmode="numeric"></label>
+        </div>
+        <div class="modes" role="radiogroup" aria-label="ประเภทการทดสอบ">
+            <label><input type="radio" name="mode" value="pre" checked>ก่อนเรียน</label>
+            <label><input type="radio" name="mode" value="post">หลังเรียน</label>
+        </div>
+        <div class="btn-row">
+            <button class="btn ghost" type="button" id="printPaper">พิมพ์ข้อสอบ + กระดาษคำตอบ</button>
+        </div>
+    </header>
+
+    <main class="card" id="quiz"></main>
+
+    <div class="btn-row no-print">
+        <button class="btn orange" type="button" id="submit">ส่งคำตอบ</button>
+        <button class="btn ghost" type="button" id="reset">เริ่มทำใหม่</button>
+    </div>
+
+    <section class="card result no-print" id="result" hidden aria-live="polite"></section>
+
+    <!-- ใบรายงานคะแนน (สร้างหลังกดส่ง แสดงบนจอและพิมพ์ได้) -->
+    <section class="score-sheet" id="scoreSheet" hidden aria-label="ใบรายงานคะแนน"></section>
+
+    <section class="card no-print">
+        <h3>สำหรับครู</h3>
+        <p class="muted" style="margin:0 0 8px">ใส่รหัสครูเพื่อแสดงเฉลยและคำอธิบายในหน้านี้ (เช่น ตอนเฉลยบนโปรเจกเตอร์)</p>
+        <div class="teacher">
+            <input type="password" id="pw" placeholder="รหัสครู" autocomplete="off">
+            <button class="btn small" type="button" id="unlock">แสดงเฉลย</button>
+            <span id="pwMsg"></span>
+        </div>
+    </section>
+
+    <!-- กระดาษคำตอบ (พิมพ์) -->
+    <section class="answer-sheet print-only">
+        <div class="sheet-head"><b>กระดาษคำตอบ แบบทดสอบ บทที่ 2</b>
+            <div class="line"><span>ชื่อ-สกุล ......................................................</span><span>ชั้น ...............</span><span>เลขที่ ........</span><span>☐ ก่อนเรียน ☐ หลังเรียน</span></div>
+        </div>
+        <table id="sheetTable"></table>
+    </section>
+</div>
+
+<script src="../assets/js/common.js"></script>
+<script src="meters.js"></script>
+<script src="quiz-data.js"></script>
+<script src="check-data.js"></script>
+<script src="answers.enc.js"></script>
+<script src="../assets/js/scoresheet.js"></script>
+<script>
+/* ===========================================
+   แบบทดสอบ: ข้อและตัวเลือกเรียงตามหนังสือ (ไม่สลับ) ตรวจด้วยค่าแฮช ไม่มีเฉลยในหน้าเว็บ
+   =========================================== */
+(function () {
+    const C = LessonCommon, Q = window.QUIZ.questions, H = window.CHECK;
+    const TH = ['ก', 'ข', 'ค', 'ง'];
+    const box = document.getElementById('quiz');
+    let key = null;
+
+    function render(shuffle) {
+        box.innerHTML = Q.map((q, i) => {
+            const order = shuffle ? C.shuffle([0, 1, 2, 3]) : [0, 1, 2, 3];
+            return `<div class="q" data-id="${q.id}">
+                <div class="stem"><span class="n">${i + 1}.</span>${q.q}<span class="res"></span></div>
+                <div class="choices">${order.map((o, j) => `<label class="choice" data-o="${o}">
+                    <input type="radio" name="${q.id}" value="${o}"><span><span class="l">${TH[j]}.</span> ${q.choices[o]}</span></label>`).join('')}</div>
+                <div class="explain note"></div></div>`;
+        }).join('');
+        document.getElementById('sheetTable').innerHTML =
+            '<tr><th>ข้อ</th><th>ก</th><th>ข</th><th>ค</th><th>ง</th><th>ข้อ</th><th>ก</th><th>ข</th><th>ค</th><th>ง</th></tr>' +
+            Array.from({ length: 5 }, (_, i) => `<tr><td>${i + 1}</td><td></td><td></td><td></td><td></td><td>${i + 6}</td><td></td><td></td><td></td><td></td></tr>`).join('');
+        Meters.render(box);
+        if (key) showKey();
+    }
+
+    function who() {
+        return { name: document.getElementById('name').value.trim(), room: document.getElementById('room').value.trim(), no: document.getElementById('no').value.trim() };
+    }
+    const mode = () => document.querySelector('input[name=mode]:checked').value;
+
+    /* --- จับเวลา: เริ่มเมื่อเลือกคำตอบข้อแรก --- */
+    let loadedAt = Date.now(), startedAt = null, confirmBlank = false, locked = false;
+    box.addEventListener('change', () => { if (!startedAt) startedAt = Date.now(); confirmBlank = false; });
+
+    function setLocked(on) {
+        locked = on;
+        box.classList.toggle('locked', on);
+        box.querySelectorAll('input').forEach(i => { i.disabled = on; });
+        ['name', 'room', 'no'].forEach(id => { document.getElementById(id).disabled = on; });
+        document.querySelectorAll('input[name=mode]').forEach(i => { i.disabled = on; });
+        document.getElementById('submit').disabled = on;
+    }
+
+    function submit() {
+        if (locked) return;
+        const w = who();
+        if (!w.name || !w.room || !w.no) { alertBox('กรุณากรอก ชื่อ-สกุล ชั้น และเลขที่ ให้ครบก่อนส่งคำตอบ'); return; }
+        const blanks = [];
+        box.querySelectorAll('.q').forEach((div, i) => { if (!div.querySelector('input:checked')) blanks.push(i + 1); });
+        if (blanks.length && !confirmBlank) {
+            confirmBlank = true;
+            alertBox(`ยังไม่ได้ตอบ ${blanks.length} ข้อ (ข้อ ${blanks.join(', ')}) — ถ้าต้องการส่งเลย ให้กด “ส่งคำตอบ” อีกครั้ง`);
+            return;
+        }
+        let score = 0;
+        const marks = [];
+        box.querySelectorAll('.q').forEach(div => {
+            const id = div.dataset.id;
+            const sel = div.querySelector('input:checked');
+            const res = div.querySelector('.res');
+            if (!sel) { marks.push('–'); res.innerHTML = ' <span class="bad">(ไม่ได้ตอบ)</span>'; return; }
+            const ok = C.answerHash(H.salt, id, sel.value) === H.h[id];
+            if (ok) score++;
+            marks.push(ok ? '✓' : '✗');
+            res.innerHTML = ok ? ' <span class="ok">✓</span>' : ' <span class="bad">✗</span>';
+        });
+        const submittedAt = Date.now();
+        const start = startedAt || loadedAt;
+        const m = mode();
+        const k = 'beb-ch02-quiz:' + w.room + ':' + w.no + ':' + w.name;
+        const rec = C.store.get(k, {});
+        rec.history = rec.history || [];
+        const attempt = rec.history.filter(h => h.mode === m).length + 1;
+        rec.history.push({ mode: m, score, total: Q.length, marks: marks.join(''), submittedAt, startedAt: start, attempt });
+        rec[m] = { score, at: submittedAt };
+        C.store.set(k, rec);
+        setLocked(true);
+
+        const pct = Math.round(score / Q.length * 100);
+        let cmp = '';
+        if (rec.pre && rec.post) {
+            const d = rec.post.score - rec.pre.score;
+            cmp = `<table><tr><th>ก่อนเรียน (ล่าสุด)</th><td>${rec.pre.score} / ${Q.length}</td><th>หลังเรียน (ล่าสุด)</th><td>${rec.post.score} / ${Q.length}</td><th>พัฒนาการ</th><td><b>${d >= 0 ? '+' : ''}${d}</b> คะแนน</td></tr></table>`;
+        }
+        const cells = from => marks.slice(from, from + 10).map(x => `<td class="${x === '✓' ? 'ok' : 'bad'}">${x}</td>`).join('');
+        const nums = from => Array.from({ length: 10 }, (_, i) => `<th>${from + i + 1}</th>`).join('');
+        const detail = `<table class="ss-grid"><tr><th>ข้อ</th>${nums(0)}</tr><tr><th>ผล</th>${cells(0)}</tr></table>
+            <div class="muted" style="font-size:13px">✓ = ตอบถูก · ✗ = ตอบผิด · – = ไม่ได้ตอบ</div>`;
+        ScoreSheet.render(document.getElementById('scoreSheet'), {
+            kind: 'แบบทดสอบ' + (m === 'pre' ? 'ก่อนเรียน' : 'หลังเรียน'),
+            chapter: window.QUIZ.chapter,
+            who: w, score, total: Q.length, submittedAt, startedAt: start, attempt,
+            detailHTML: detail, extraHTML: cmp
+        });
+
+        const r = document.getElementById('result');
+        r.hidden = false;
+        r.innerHTML = `<div class="ok">ส่งคำตอบเรียบร้อย · ${C.thaiDateTime(submittedAt)}</div>
+            <div class="big">${score} / ${Q.length} คะแนน (${pct}%)</div>
+            <div class="muted" style="font-family:var(--font-body)">ข้อที่ผิดให้กลับไปทบทวนสไลด์หัวข้อนั้น · ครูจะเฉลยในชั้นเรียน</div>
+            <div class="score-actions" style="margin-top:12px">
+                <button class="btn orange" type="button" id="printScore">พิมพ์ใบคะแนน</button>
+                <span class="hint">ในหน้าต่างพิมพ์ เลือกปลายทาง “บันทึกเป็น PDF” แล้วนำไฟล์ไปแนบส่งใน Google Classroom</span>
+            </div>`;
+        document.getElementById('printScore').addEventListener('click', () => ScoreSheet.print());
+        r.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function alertBox(msg) {
+        const r = document.getElementById('result');
+        r.hidden = false; r.innerHTML = `<div class="bad">${msg}</div>`;
+        r.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    /* --- ครู: ถอดรหัสเฉลยแล้วแสดงในหน้านี้ --- */
+    async function unlock() {
+        const msg = document.getElementById('pwMsg');
+        msg.textContent = 'กำลังตรวจสอบ…';
+        try {
+            key = await C.decryptAnswers(window.ANSWERS_ENC, document.getElementById('pw').value);
+            msg.innerHTML = '<span class="ok">แสดงเฉลยแล้ว</span>';
+            showKey();
+        } catch (e) {
+            msg.innerHTML = e.message === 'NO_CRYPTO' ? '<span class="bad">เบราว์เซอร์นี้ไม่รองรับ ลองเปิดผ่าน https หรือ Chrome</span>' : '<span class="bad">รหัสไม่ถูกต้อง</span>';
+        }
+    }
+
+    function showKey() {
+        box.classList.add('reveal-on');
+        box.querySelectorAll('.q').forEach(div => {
+            const k = key.quiz[div.dataset.id];
+            div.querySelectorAll('.choice').forEach(c => c.classList.toggle('key', +c.dataset.o === k.correct));
+            const letter = TH[Array.from(div.querySelectorAll('.choice')).findIndex(c => +c.dataset.o === k.correct)];
+            div.querySelector('.explain').innerHTML = `<b>เฉลย ${letter}</b> — ${k.explain}`;
+        });
+    }
+
+    render(false);
+    document.getElementById('submit').addEventListener('click', submit);
+    document.getElementById('reset').addEventListener('click', () => {
+        setLocked(false);
+        render(false);
+        startedAt = null; loadedAt = Date.now(); confirmBlank = false;
+        document.getElementById('result').hidden = true;
+        document.getElementById('scoreSheet').hidden = true;
+        window.scrollTo({ top: 0 });
+    });
+    document.getElementById('unlock').addEventListener('click', unlock);
+    document.getElementById('pw').addEventListener('keydown', e => { if (e.key === 'Enter') unlock(); });
+    /* พิมพ์ข้อสอบ: ใช้ลำดับตัวเลือกเดิม (ก ข ค ง ตรงกับเฉลย) — ถ้ายังไม่มีใครเลือกคำตอบ */
+    let reRendered = false;
+    window.addEventListener('beforeprint', () => {
+        if (document.body.classList.contains('print-score')) return;
+        if (!box.querySelector('input:checked')) { render(false); reRendered = true; }
+    });
+    window.addEventListener('afterprint', () => { if (reRendered) { render(false); reRendered = false; } });
+    document.getElementById('printPaper').addEventListener('click', () => {
+        if (locked) { alertBox('ส่งคำตอบแล้ว ถ้าจะพิมพ์ข้อสอบเปล่า ให้กด “เริ่มทำใหม่” ก่อน'); return; }
+        box.querySelectorAll('input:checked').forEach(i => { i.checked = false; });
+        window.print();
+    });
+})();
+</script>
+</body>
+</html>

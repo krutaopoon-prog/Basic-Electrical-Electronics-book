@@ -1,0 +1,235 @@
+/* ===========================================
+   THEME TOKENS — ใช้ร่วมกันทุกหน้า (สไลด์ แบบฝึกหัด แบบทดสอบ เฉลย)
+   เปลี่ยนสีทั้งเว็บได้ที่ :root ด้านล่าง
+   =========================================== */
+:root {
+    /* พื้นและหมึก — โทนขาวอบอุ่น */
+    --paper: #fffdf8;
+    --cream: #fbf5ea;
+    --cream-deep: #f4ead8;
+    --ink: #2a2733;
+    --ink-soft: #5d5866;
+    --line: #e6dccb;
+
+    /* สีเน้น */
+    --teal: #00878f;
+    --teal-soft: #d8f0ef;
+    --orange: #e8742c;
+    --orange-soft: #fde6d4;
+    --sun: #f7b733;
+    --sun-soft: #fff1cc;
+    --blue: #3b6fd4;
+    --blue-soft: #dfe8fa;
+    --rose: #d6455d;
+    --rose-soft: #fbe0e4;
+    --green: #2e9b57;
+    --green-soft: #dcf3e3;
+
+    /* ลอจิก 1 / 0 */
+    --hi: #e8742c;
+    --lo: #a8a1b0;
+
+    /* ฟอนต์: หัวข้อ Kanit / เนื้อหา Sarabun (ไทยมีหัว อ่านง่ายบนโปรเจกเตอร์) / ตัวเลข Prompt
+       (เลือกฟอนต์ที่เลข 0 ไม่มีขีดทับ เพื่อไม่ให้สับสนกับ Ø ตอนเรียนเลขฐาน) */
+    --font-display: 'Kanit', 'Sarabun', sans-serif;
+    --font-body: 'Sarabun', sans-serif;
+    --font-mono: 'Prompt', 'Sarabun', sans-serif;
+}
+
+* { box-sizing: border-box; }
+body { font-variant-numeric: tabular-nums; }
+
+/* ===========================================
+   DOCUMENT PAGES (index / exercises / quiz / answers)
+   =========================================== */
+body.doc {
+    margin: 0;
+    background: var(--cream);
+    background-image: radial-gradient(var(--line) 1px, transparent 1px);
+    background-size: 22px 22px;
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-size: 18px;
+    line-height: 1.65;
+}
+
+.doc-wrap {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 24px 16px 80px;
+}
+
+.doc h1, .doc h2, .doc h3 {
+    font-family: var(--font-display);
+    font-weight: 500;
+    line-height: 1.3;
+    margin: 0 0 .4em;
+}
+.doc h1 { font-size: clamp(26px, 4vw, 38px); }
+.doc h2 { font-size: clamp(21px, 3vw, 27px); }
+.doc h3 { font-size: 19px; }
+
+.doc a { color: var(--teal); }
+
+.topbar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 18px;
+    font-size: 15px;
+}
+.topbar a { text-decoration: none; }
+.topbar .spacer { flex: 1; }
+
+.card {
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 22px 22px;
+    margin: 0 0 18px;
+    box-shadow: 0 2px 0 var(--cream-deep);
+}
+
+.chip {
+    display: inline-block;
+    padding: 2px 12px;
+    border-radius: 999px;
+    font-size: 14px;
+    font-family: var(--font-display);
+    background: var(--teal-soft);
+    color: var(--teal);
+}
+.chip.orange { background: var(--orange-soft); color: #b5531a; }
+.chip.blue { background: var(--blue-soft); color: var(--blue); }
+.chip.rose { background: var(--rose-soft); color: var(--rose); }
+.chip.sun { background: var(--sun-soft); color: #9a6a00; }
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font: 500 16px var(--font-display);
+    padding: 9px 18px;
+    border-radius: 12px;
+    border: 1.5px solid var(--teal);
+    background: var(--teal);
+    color: #fff;
+    cursor: pointer;
+    text-decoration: none;
+}
+.btn:hover { filter: brightness(1.08); }
+.btn.ghost { background: var(--paper); color: var(--teal); }
+.doc a.btn { color: #fff; }
+.doc a.btn.ghost { color: var(--teal); }
+.btn.orange { background: var(--orange); border-color: var(--orange); }
+.btn.small { padding: 5px 12px; font-size: 14px; border-radius: 9px; }
+.btn:focus-visible, input:focus-visible, select:focus-visible { outline: 3px solid var(--sun); outline-offset: 2px; }
+
+.btn-row { display: flex; flex-wrap: wrap; gap: 10px; margin: 12px 0; }
+
+.doc input[type=text], .doc input[type=password], .doc select {
+    font: 18px var(--font-mono);
+    padding: 6px 10px;
+    border: 1.5px solid var(--line);
+    border-radius: 10px;
+    background: #fff;
+    color: var(--ink);
+    min-width: 0;
+}
+.doc input.name-field { font-family: var(--font-body); }
+.doc select { font-family: var(--font-body); font-size: 17px; }
+
+.ok { color: var(--green); font-weight: 600; }
+.bad { color: var(--rose); font-weight: 600; }
+.is-ok { border-color: var(--green) !important; background: var(--green-soft) !important; }
+.is-bad { border-color: var(--rose) !important; background: var(--rose-soft) !important; }
+
+.muted { color: var(--ink-soft); }
+.note {
+    border-left: 4px solid var(--sun);
+    background: var(--sun-soft);
+    padding: 10px 14px;
+    border-radius: 0 10px 10px 0;
+    font-size: 16px;
+}
+
+table.tt { border-collapse: collapse; margin: 8px 0; font-family: var(--font-mono); }
+table.tt th, table.tt td { border: 1px solid var(--line); padding: 4px 14px; text-align: center; }
+table.tt th { background: var(--cream-deep); font-family: var(--font-display); font-weight: 500; }
+
+.gate-svg { width: 150px; height: 75px; }
+.gate-svg path, .gate-svg circle { stroke: var(--ink); stroke-width: 4; fill: var(--teal-soft); stroke-linejoin: round; }
+.gate-svg line, .gate-svg .wire { stroke: var(--ink); stroke-width: 4; fill: none; stroke-linecap: round; }
+.gate-svg text { font: 600 18px var(--font-mono); fill: var(--ink-soft); stroke: none; }
+
+.print-only { display: none; }
+
+/* ===========================================
+   SCORE SHEET — ใบรายงานคะแนน (scoresheet.js)
+   =========================================== */
+.score-sheet {
+    background: #fff;
+    border: 2px solid var(--ink);
+    border-radius: 14px;
+    padding: 22px 26px;
+    margin: 0 0 18px;
+    max-width: 760px;
+}
+.score-sheet .ss-top { text-align: center; border-bottom: 2px solid var(--ink); padding-bottom: 10px; margin-bottom: 14px; }
+.score-sheet .ss-org { font-size: 15px; color: var(--ink-soft); }
+.score-sheet .ss-title { font: 500 28px var(--font-display); margin: 2px 0; }
+.score-sheet .ss-sub { font-size: 16px; }
+.score-sheet table { border-collapse: collapse; width: 100%; margin: 8px 0; }
+.score-sheet th, .score-sheet td { border: 1px solid #b9b2a6; padding: 5px 10px; text-align: left; font-size: 16px; }
+.score-sheet th { background: var(--cream); font-family: var(--font-display); font-weight: 500; white-space: nowrap; width: 1%; }
+.score-sheet .ss-score { text-align: center; font-family: var(--font-display); font-size: 20px; margin: 12px 0 6px; }
+.score-sheet .ss-big { font: 600 46px var(--font-mono); color: var(--teal); }
+.score-sheet .ss-pct { color: var(--ink-soft); }
+.score-sheet .ss-grid td, .score-sheet .ss-grid th { text-align: center; width: auto; padding: 4px 2px; }
+.score-sheet .ss-grid td { font-weight: 700; }
+.score-sheet .ss-sets td:not(:nth-child(2)), .score-sheet .ss-sets th { text-align: center; }
+.score-sheet .ss-sets th { width: auto; }
+.score-sheet .ss-sets td:nth-child(2) { width: 62%; }
+.score-sheet .ss-foot { margin-top: 12px; font-size: 13px; color: var(--ink-soft); text-align: center; word-break: break-all; }
+.score-actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.score-actions .hint { font-size: 14px; color: var(--ink-soft); }
+.locked input, .locked select, .locked .choice { cursor: not-allowed; }
+
+/* ===========================================
+   PRINT (A4) — ใบงาน / ข้อสอบ / เฉลย
+   =========================================== */
+@page { size: A4 portrait; margin: 14mm 14mm 16mm; }
+
+@media print {
+    body.doc { background: #fff; font-size: 13.5pt; line-height: 1.5; }
+    .doc-wrap { max-width: none; padding: 0; }
+    .no-print, .topbar, .btn, .btn-row { display: none !important; }
+    .print-only { display: block; }
+    .card { border: none; box-shadow: none; padding: 0; margin: 0 0 10mm; background: none; }
+    h2, h3 { break-after: avoid; }
+    .item, .q, .avoid-break { break-inside: avoid; }
+    .page-break { break-before: page; }
+    .chip { border: 1px solid #999; background: none !important; color: #000 !important; }
+    .doc input[type=text], .doc select {
+        border: none;
+        border-bottom: 1.2px dotted #000;
+        border-radius: 0;
+        background: none !important;
+        -webkit-appearance: none;
+        appearance: none;
+    }
+    .is-ok, .is-bad { background: none !important; }
+    .feedback { display: none !important; }
+    body.print-blank input[type=text], body.print-blank select { color: transparent !important; }
+    body.print-blank .feedback { visibility: hidden; }
+
+    /* ใบคะแนน: พิมพ์เฉพาะใบคะแนนเมื่อ body.print-score, กรณีอื่นไม่พิมพ์ใบคะแนน */
+    body:not(.print-score) .score-sheet { display: none !important; }
+    body.print-score .doc-wrap > :not(.score-sheet) { display: none !important; }
+    body.print-score .score-sheet { display: block !important; border: 1.5px solid #000; border-radius: 0; max-width: none; padding: 8mm 10mm; break-inside: avoid; }
+    body.print-score .score-sheet th { background: #eee !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    body.print-score .score-sheet th, body.print-score .score-sheet td { font-size: 12.5pt; border-color: #555; }
+    body.print-score .score-sheet .ss-big { color: #000; }
+    a { color: #000; text-decoration: none; }
+}

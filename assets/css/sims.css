@@ -1,0 +1,109 @@
+/* ===========================================
+   กิจกรรมในสไลด์ (sims.js): ป้ายกิจกรรม ตัวจับเวลา โหวต กระดานคะแนน สุ่มเลขที่ วิดีโอ เกมล่าจุดเสี่ยง
+   =========================================== */
+
+/* ---------- ป้ายกิจกรรม ---------- */
+.act-badge { display: inline-flex; align-items: center; gap: 10px; font: 500 30px var(--font-display); color: #fff; background: var(--rose);
+    border-radius: 999px; padding: 4px 24px; margin-bottom: 6px; }
+.act-badge.vd { background: var(--blue); }
+.act-meta { display: inline-block; font: 500 26px var(--font-display); color: var(--rose); margin-left: 14px; }
+.act-badge.vd + .act-meta { color: var(--blue); }
+.slide.act { background: radial-gradient(circle at 1880px 40px, var(--rose-soft) 0 260px, transparent 261px),
+    radial-gradient(rgba(42, 39, 51, .09) 1.6px, transparent 1.6px) 0 0 / 34px 34px, #fffaf8; }
+.slide.act.watch { background: radial-gradient(circle at 1880px 40px, var(--blue-soft) 0 260px, transparent 261px),
+    radial-gradient(rgba(42, 39, 51, .09) 1.6px, transparent 1.6px) 0 0 / 34px 34px, #f9fbff; }
+ol.steps-act li { margin-bottom: 10px; }
+.qbox { background: #fff; border: 3px solid var(--line); border-radius: 24px; padding: 18px 26px; box-shadow: 0 5px 0 var(--cream-deep); }
+.qbox h3 { margin: 0 0 8px; font-size: 34px; color: var(--blue); }
+.qbox ol { margin: 0; padding-left: 40px; font-size: 30px; line-height: 1.45; }
+.qbox ol li { margin-bottom: 6px; }
+
+/* ---------- ตัวจับเวลา ---------- */
+.timer { display: inline-flex; flex-direction: column; align-items: center; gap: 10px; background: #fff; border: 3px solid var(--line);
+    border-radius: 28px; padding: 16px 28px; box-shadow: 0 6px 0 var(--cream-deep); }
+.timer .tm-face { font: 700 110px/1 var(--font-mono); color: var(--teal); min-width: 4.2ch; text-align: center; }
+.timer.sm .tm-face { font-size: 72px; }
+.timer.sm { padding: 10px 20px; }
+.timer.low .tm-face { color: var(--orange); }
+.timer.done .tm-face { color: var(--rose); animation: tm-blink .8s steps(2) infinite; }
+@keyframes tm-blink { 50% { opacity: .25; } }
+.timer .tm-btns { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; justify-content: center; }
+.timer button, .board button, .picker button, .vote .reveal, .hunt-btns button {
+    font: 500 26px var(--font-display); color: var(--ink); background: var(--cream); border: 2px solid var(--line);
+    border-radius: 14px; padding: 6px 18px; cursor: pointer; }
+
+/* ---------- โหวต ---------- */
+.vote { display: grid; grid-template-columns: 1fr 1fr; gap: 20px 28px; }
+.vote.one { grid-template-columns: 1fr; gap: 14px; }
+.vote.pair { grid-template-columns: 1fr 1fr auto; gap: 14px; align-items: center; }
+.vote.pair .reveal { grid-column: auto; }
+.vote .opt { text-align: left; font: 400 38px/1.35 var(--font-body); color: var(--ink); background: #fff; border: 3px solid var(--line);
+    border-radius: 24px; padding: 18px 26px; cursor: pointer; box-shadow: 0 5px 0 var(--cream-deep); transition: background .25s, border-color .25s, opacity .25s; }
+.vote.one .opt, .vote.pair .opt { font-size: 32px; padding: 12px 22px; }
+.vote .opt b { font-family: var(--font-display); color: var(--sec); margin-right: 10px; }
+.vote .opt.picked { border-color: var(--blue); background: var(--blue-soft); }
+.vote.revealed .opt { opacity: .4; }
+.vote.revealed .opt.right { opacity: 1; border-color: var(--green); background: var(--green-soft); }
+.vote.revealed .opt.right::after { content: ' ✓'; color: var(--green); font-weight: 700; }
+.vote .reveal { grid-column: 1 / -1; justify-self: start; }
+.vote .why { grid-column: 1 / -1; display: none; font-size: 30px; background: var(--sun-soft); border-left: 6px solid var(--sun); border-radius: 0 16px 16px 0; padding: 10px 22px; }
+.vote.revealed .why { display: block; }
+.vrow { display: grid; grid-template-columns: 640px 1fr; gap: 26px; align-items: center; margin-bottom: 18px; }
+.vrow .sit { font-size: 32px; line-height: 1.35; }
+.vrow .sit .no { display: inline-block; width: 50px; height: 50px; border-radius: 50%; background: var(--sec); color: #fff; text-align: center;
+    font: 600 30px/50px var(--font-mono); margin-right: 12px; }
+
+/* ---------- กระดานคะแนน / สุ่มเลขที่ ---------- */
+.board { display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-end; }
+.board .bd-g { background: #fff; border: 2px solid var(--line); border-radius: 20px; padding: 10px 18px; text-align: center; min-width: 170px; }
+.board .bd-n { font: 500 26px var(--font-display); color: var(--ink-soft); }
+.board .bd-s { font: 700 64px/1.1 var(--font-mono); color: var(--orange); }
+.board .bd-b { display: flex; gap: 8px; justify-content: center; }
+.board .bd-b button { min-width: 56px; }
+.board .bd-reset { font-size: 22px; }
+.picker { display: flex; align-items: center; gap: 22px; flex-wrap: wrap; font-size: 32px; }
+.picker input { width: 3.4em; font: 500 32px var(--font-mono); padding: 2px 8px; border: 2px solid var(--line); border-radius: 10px; }
+.picker .pk-num { font: 700 120px/1 var(--font-mono); color: var(--rose); min-width: 2ch; text-align: center; }
+.picker .pk-num.spin { color: var(--ink-soft); }
+
+/* ---------- วิดีโอ ---------- */
+.vid { display: flex; flex-direction: column; gap: 8px; }
+.vid .vd-frame { position: relative; width: 100%; aspect-ratio: 16 / 9; border-radius: 22px; overflow: hidden; background: #1d1b22;
+    box-shadow: 0 8px 0 var(--cream-deep); }
+.vid iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+.vid .vd-poster { position: absolute; inset: 0; width: 100%; height: 100%; padding: 0; border: 0; cursor: pointer; background: #1d1b22; }
+.vid .vd-poster img { width: 100%; height: 100%; object-fit: cover; opacity: .78; display: block; }
+.vid .vd-play { position: absolute; left: 50%; top: 50%; width: 150px; height: 106px; margin: -53px 0 0 -75px; border-radius: 30px;
+    background: #e62117; color: #fff; font: 700 56px/106px var(--font-mono); text-align: center; box-shadow: 0 6px 24px rgba(0, 0, 0, .35); }
+.vid .vd-poster:hover .vd-play { filter: brightness(1.12); }
+.vid .vd-t { position: absolute; left: 0; right: 0; bottom: 0; padding: 40px 26px 16px; text-align: left; color: #fff;
+    font: 500 30px/1.3 var(--font-display); background: linear-gradient(transparent, rgba(0, 0, 0, .78)); }
+.vid .vd-cap { display: flex; justify-content: space-between; gap: 18px; font-size: 22px; color: var(--ink-soft); }
+.vid .vd-cap a { color: var(--blue); white-space: nowrap; }
+
+/* ---------- เกมล่าจุดเสี่ยง ---------- */
+.hunt { display: grid; grid-template-columns: 1080px 1fr; gap: 26px; align-items: start; }
+.hunt svg { width: 100%; height: auto; display: block; border-radius: 22px; border: 3px solid var(--line); background: #fff; }
+.hunt svg text { font-family: 'Kanit', sans-serif; }
+.hunt .spot { cursor: pointer; }
+.hunt .spot .hit { fill: rgba(255, 255, 255, 0); stroke: none; }
+.hunt .spot .ring, .hunt .spot .tag { opacity: 0; transition: opacity .3s; }
+.hunt .spot .ring { fill: rgba(214, 69, 93, .1); stroke: var(--rose); stroke-width: 6; stroke-dasharray: 16 9; }
+.hunt .spot .tag circle { fill: var(--rose); }
+.hunt .spot .tag text { fill: #fff; font: 700 30px var(--font-mono); text-anchor: middle; }
+.hunt .spot.found .ring, .hunt .spot.found .tag { opacity: 1; }
+.hunt-side { display: flex; flex-direction: column; gap: 12px; }
+.hunt-score { font: 500 30px var(--font-display); }
+.hunt-score .hunt-n { font: 700 54px var(--font-mono); color: var(--rose); margin-left: 8px; }
+.hunt-list { margin: 0; padding-left: 0; list-style: none; counter-reset: hz; }
+.hunt-list li { counter-increment: hz; position: relative; padding: 6px 0 6px 54px; font-size: 26px; line-height: 1.3; color: transparent;
+    border-bottom: 2px dashed var(--line); min-height: 52px; }
+.hunt-list li::before { content: counter(hz); position: absolute; left: 0; top: 6px; width: 40px; height: 40px; border-radius: 50%;
+    background: var(--cream-deep); color: var(--ink-soft); font: 700 24px/40px var(--font-mono); text-align: center; }
+.hunt-list li::after { content: '?'; position: absolute; left: 54px; top: 6px; color: var(--ink-soft); }
+.hunt-list li.found { color: var(--ink); }
+.hunt-list li.found::before { background: var(--rose); color: #fff; }
+.hunt-list li.found::after { content: none; }
+.hunt-btns { display: flex; gap: 10px; flex-wrap: wrap; }
+
+@media print { .timer, .board, .picker, .vote .reveal, .hunt-btns { display: none !important; } .vote .why { display: block; } }

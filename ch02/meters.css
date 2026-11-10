@@ -1,0 +1,29 @@
+/* ภาพเครื่องวัดบทที่ 2 (คู่กับ meters.js) */
+[data-meter] { display: block; }
+.mt-svg { display: block; width: 100%; height: auto; }
+.mt-wave { max-width: 320px; }
+
+/* ฝึกอ่านเข็ม */
+.mt-lab { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; align-items: center; }
+.mt-lab .ml-face { background: #fff; border: 3px solid var(--line); border-radius: 22px; padding: 10px; }
+.mt-lab .ml-face.over .mt-needle { animation: mt-shake .18s linear infinite alternate; transform-origin: 500px 660px; }
+@keyframes mt-shake { from { transform: rotate(-0.8deg); } to { transform: rotate(0.8deg); } }
+.mt-lab .ml-ctl { display: flex; flex-direction: column; gap: 14px; }
+.mt-lab .ml-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.mt-lab .ml-h { font: 500 0.9em var(--font-display); color: var(--ink-soft); min-width: 5.2em; }
+.mt-lab button { font: 500 0.85em var(--font-mono); border: 2px solid var(--line); background: #fff; color: var(--ink); border-radius: 12px; padding: 4px 12px; cursor: pointer; }
+.mt-lab button.on { border-color: var(--teal); background: var(--teal-soft); color: #0b5f65; }
+.mt-lab button.alt { border-color: var(--orange); color: var(--orange); }
+.mt-lab button.go { background: var(--teal); border-color: var(--teal); color: #fff; font-family: var(--font-display); }
+.mt-lab .ml-out { min-height: 3.2em; font-size: 0.95em; line-height: 1.4; background: var(--cream); border-radius: 14px; padding: 10px 16px; }
+.mt-lab .ml-out .hint { font-size: 0.85em; color: var(--ink-soft); }
+.mt-lab .ok { color: var(--green); }
+.mt-lab .bad { color: var(--rose); }
+
+/* ในสไลด์ (เวที 1920×1080) */
+.slide .mt-lab { font-size: 34px; grid-template-columns: 900px 1fr; }
+
+/* หน้าเว็บมือถือ */
+@media (max-width: 720px) {
+    .mt-lab { grid-template-columns: 1fr; gap: 12px; }
+}

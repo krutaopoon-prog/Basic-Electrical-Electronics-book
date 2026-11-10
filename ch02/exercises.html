@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>แบบฝึกหัด บทที่ 2</title>
+<meta name="description" content="แบบฝึกหัด บทที่ 2 เครื่องวัดไฟฟ้าเบื้องต้น ฝึกอ่านเข็มมิเตอร์ เลือกย่าน และแบบฝึกหัดตอนที่ 2 จากหนังสือ ตรวจคำตอบทันทีและพิมพ์เป็นใบงานได้">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;500&family=Sarabun:wght@400;700&family=Prompt:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/theme.css">
+<link rel="stylesheet" href="meters.css">
+<style>
+    .set-head { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; justify-content: space-between; }
+    .part { margin-top: 18px; }
+    .part h3 { color: var(--teal); }
+    .items { display: grid; grid-template-columns: repeat(auto-fill, minmax(270px, 1fr)); gap: 12px 22px; }
+    .items.wide { grid-template-columns: 1fr; }
+    .item { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; padding: 8px 0; border-bottom: 1px dashed var(--line); }
+    .item .no { font-family: var(--font-display); color: var(--ink-soft); min-width: 2.2em; }
+    .item input[type=text] { width: 7.5em; }
+    .item select { max-width: 100%; }
+    .item .qtext { flex: 1 1 260px; }
+    .feedback { font-weight: 600; min-width: 1.6em; }
+    .score { font-family: var(--font-display); font-size: 18px; }
+    .opts { display: flex; flex-wrap: wrap; gap: 4px 18px; font-size: 16px; background: var(--cream); border-radius: 10px; padding: 6px 12px; margin-bottom: 6px; }
+    .opts.col { flex-direction: column; }
+    .iopts { display: none; }
+    .exc { display: block; width: 330px; max-width: 100%; }
+    .item .qtext .exc { margin-bottom: 4px; }
+    .witem { padding: 10px 0 14px; border-bottom: 1px dashed var(--line); }
+    .witem .wq { font-weight: 700; }
+    .witem .wq .no { font-family: var(--font-display); color: var(--ink-soft); margin-right: 6px; }
+    .witem .hint { font-size: 15.5px; color: var(--ink-soft); margin: 2px 0 6px; }
+    .witem textarea { width: 100%; min-height: 8.5em; font: 17px/1.6 var(--font-body); padding: 8px 12px; border: 1.5px solid var(--line); border-radius: 12px; resize: vertical; }
+    .wlines { display: none; }
+    .set.write .score, .set.write [data-act] { display: none; }
+    .part h3 .exc { width: 420px; margin: 8px 0 0; font-weight: 400; }
+    .who { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 10px; }
+    .who label { display: flex; flex-direction: column; font-size: 15px; color: var(--ink-soft); gap: 4px; }
+    .who input { width: 100%; }
+    .btn:disabled { opacity: .45; cursor: not-allowed; }
+    #result .big { font: 500 40px var(--font-display); color: var(--teal); }
+    @media (max-width: 620px) { .who { grid-template-columns: 1fr 1fr; } .who label:first-child { grid-column: 1 / -1; } }
+    .sheet-head { border: 1.5px solid #000; padding: 8px 12px; margin-bottom: 8mm; font-size: 12.5pt; }
+    .sheet-head .line { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 4px; }
+    .sheet-head .line span { white-space: nowrap; }
+    @media (max-width: 560px) { .items { grid-template-columns: 1fr; } }
+    @media print {
+        .set + .set { break-before: page; }
+        body[data-print-set] .set { display: none; }
+        body[data-print-set="s1"] .set[data-set="s1"], body[data-print-set="s2"] .set[data-set="s2"],
+        body[data-print-set="s3"] .set[data-set="s3"], body[data-print-set="s4"] .set[data-set="s4"] { display: block; break-before: auto; }
+        .items { grid-template-columns: 1fr 1fr; gap: 2mm 10mm; }
+        .items.wide { grid-template-columns: 1fr; }
+        .item { padding: 2.5mm 0; border-bottom: none; }
+        .doc .item input[type=text] { width: 34mm; }
+        .doc .item select { min-width: 30mm; }
+        .score { display: none; }
+        .opts { background: none; border: 1px solid #999; font-size: 12pt; }
+        .exc { width: 52mm; }
+        .witem .hint { font-size: 10.5pt; }
+        body.print-blank .witem textarea { display: none; }
+        body.print-blank .wlines { display: block; }
+        .wlines i { display: block; height: 9mm; border-bottom: 1px solid #777; }
+        .witem textarea { border: none; padding: 0; min-height: 0; height: auto; font-size: 12pt; }
+        .witem { break-inside: avoid; border-bottom: none; }
+        .set.write [data-act] { display: none; }
+        .part h3 .exc { width: 72mm; }
+        .iopts { display: block; flex-basis: 100%; padding-left: 2.2em; font-size: 11.5pt; color: #333; }
+        .item { break-inside: avoid; }
+        .part h3 { break-after: avoid; }
+    }
+</style>
+</head>
+<body class="doc">
+<div class="doc-wrap">
+    <nav class="topbar no-print">
+        <a href="../index.html">← หน้าแรก</a> · <a href="slides.html">สไลด์</a> · <a href="quiz.html">แบบทดสอบ</a>
+        <span class="spacer"></span>
+        <a href="answers.html">สำหรับครู</a>
+    </nav>
+
+    <!-- หัวกระดาษใบงาน (แสดงเฉพาะตอนพิมพ์) -->
+    <div class="sheet-head print-only">
+        <b>แบบฝึกหัด บทที่ 2 เครื่องวัดไฟฟ้าเบื้องต้น</b> · วิชางานไฟฟ้าและอิเล็กทรอนิกส์เบื้องต้น
+        <div class="line"><span>ชื่อ-สกุล ......................................................</span><span>ชั้น ...............</span><span>เลขที่ ........</span></div>
+        <div class="line"><span>วันที่ ......../......../........</span><span>คะแนนที่ได้ ............ / <span class="total-print"></span></span></div>
+    </div>
+
+    <header class="card no-print">
+        <span class="chip orange">บทเรียนที่ 2 · หนังสือหน้า 25–41</span>
+        <h1 style="margin-top:8px">แบบฝึกหัด: เครื่องวัดไฟฟ้าเบื้องต้น</h1>
+        <p class="muted" style="margin:0 0 12px">ชุดที่ 1–2 ตรวจทันที ✓ คือถูก ✗ คือลองใหม่ ทำครบแล้วกด <b>ส่งคำตอบทั้งหมด</b> ท้ายหน้า เพื่อรับใบคะแนน · ชุดที่ 3 เป็นตอนที่ 2 ของหนังสือ เขียนตอบแล้วครูตรวจเอง</p>
+        <div class="who">
+            <label>ชื่อ-สกุล <input class="name-field" type="text" id="name" autocomplete="name"></label>
+            <label>ชั้น <input class="name-field" type="text" id="room"></label>
+            <label>เลขที่ <input class="name-field" type="text" id="no" inputmode="numeric"></label>
+        </div>
+        <div class="btn-row">
+            <button class="btn" type="button" data-print="all">พิมพ์ใบงานทั้งหมด</button>
+            <button class="btn ghost" type="button" data-print-mine="s3">พิมพ์คำตอบชุดที่ 3 ของฉัน</button>
+            <a class="btn ghost" href="answers.html">เฉลยสำหรับครู</a>
+        </div>
+    </header>
+
+    <main id="sets"></main>
+
+    <section class="card no-print" id="submitBox">
+        <h2>ส่งคำตอบทั้งหมด</h2>
+        <p class="muted" style="margin:0 0 6px">ระบบจะตรวจทุกชุด บันทึกคะแนนพร้อมเวลาส่ง และล็อกคำตอบ แล้วจึงพิมพ์ใบคะแนนได้</p>
+        <div class="btn-row">
+            <button class="btn orange" type="button" id="submitAll">ส่งคำตอบทั้งหมด</button>
+            <button class="btn ghost" type="button" id="unlockAll" hidden>แก้คำตอบแล้วส่งใหม่</button>
+        </div>
+        <div id="result" aria-live="polite"></div>
+    </section>
+
+    <!-- ใบรายงานคะแนน (สร้างหลังกดส่ง แสดงบนจอและพิมพ์ได้) -->
+    <section class="score-sheet" id="scoreSheet" hidden aria-label="ใบรายงานคะแนน"></section>
+</div>
+
+<script src="../assets/js/common.js"></script>
+<script src="meters.js"></script>
+<script src="exercises-data.js"></script>
+<script src="check-data.js"></script>
+<script src="../assets/js/scoresheet.js"></script>
+<script>
+/* ===========================================
+   แบบฝึกหัด: สร้างโจทย์จาก exercises-data.js, ตรวจคำตอบด้วยค่าแฮชใน check-data.js
+   =========================================== */
+(function () {
+    const C = LessonCommon, E = window.EXERCISES, H = window.CHECK;
+    const root = document.getElementById('sets');
+    let total = 0;
+
+    function itemHTML(it, n, shared) {
+        const no = `<span class="no">${n}.</span>`;
+        const opts = '<option value=""></option>' + it.options.map(o => `<option>${C.esc(o)}</option>`).join('');
+        // ตัวเลือกไม่เหมือนกันทั้งตอน: พิมพ์ตัวเลือกของข้อนั้นไว้ใต้โจทย์ (กระดาษมองไม่เห็นตัวเลือกในช่องเลือก)
+        const iopts = shared ? '' : `<div class="iopts">ตัวเลือก: ${it.options.map(o => C.esc(o)).join(' / ')}</div>`;
+        return `<div class="item" data-id="${it.id}">${no}<span class="qtext">${it.q}</span>
+            <select aria-label="คำตอบข้อ ${n}">${opts}</select><span class="feedback"></span>${iopts}</div>`;
+    }
+
+    function writeHTML(it, n) {
+        return `<div class="witem" data-id="${it.id}"><div class="wq"><span class="no">${n}.</span>${it.q}</div>
+            <div class="hint">คำใบ้: ${C.esc(it.hint || '')}</div>
+            <textarea aria-label="คำตอบข้อ ${n}" data-w="${it.id}"></textarea><div class="wlines">${'<i></i>'.repeat(6)}</div></div>`;
+    }
+
+    function partHTML(p) {
+        if (p.items[0].type === 'write') { let n = 0; return `<div class="part"><h3>${p.title}</h3>${p.items.map(it => writeHTML(it, ++n)).join('')}</div>`; }
+        const wide = p.items.some(it => it.type === 'pick' && (it.q || '').replace(/<[^>]+>/g, '').length > 26);
+        let n = 0;
+        // ตัวเลือกที่ใช้ร่วมกันทั้งตอน แสดงเป็นรายการ (จำเป็นตอนพิมพ์ เพราะกระดาษมองไม่เห็นในช่องเลือก)
+        const o = p.items[0].options;
+        const shared = o && p.items.every(it => it.options && it.options.join('|') === o.join('|'));
+        const optList = shared ? `<div class="opts${o.some(x => x.length > 20) ? ' col' : ''}"><b>ตัวเลือก:</b> ${o.map(x => `<span>${C.esc(x)}</span>`).join('')}</div>` : '';
+        return `<div class="part"><h3>${p.title}</h3>${optList}<div class="items${wide ? ' wide' : ''}">${p.items.map(it => itemHTML(it, ++n, shared)).join('')}</div></div>`;
+    }
+
+    function countItems(set) {
+        return set.parts.reduce((a, p) => a + p.items.filter(it => it.type !== 'write').length, 0);
+    }
+
+    function renderSet(set) {
+        const sec = document.createElement('section');
+        sec.className = 'card set' + (set.write ? ' write' : '');
+        sec.dataset.set = set.id;
+        const max = countItems(set);
+        total += max;
+        sec.innerHTML = `
+            <div class="set-head"><h2 style="margin:0">${set.title}</h2><span class="score" aria-live="polite"></span></div>
+            <div class="parts">${set.parts.map(partHTML).join('')}</div>
+            <div class="btn-row">
+                <button class="btn" type="button" data-act="check">ตรวจคำตอบ</button>
+                <button class="btn ghost" type="button" data-act="clear">ล้างคำตอบ</button>
+                <button class="btn ghost" type="button" data-print="${set.id}">พิมพ์เฉพาะชุดนี้</button>
+            </div>`;
+        sec.dataset.max = max;
+        root.appendChild(sec);
+    }
+
+    /* --- ตรวจคำตอบ --- */
+    function mark(el, ok) {
+        el.classList.toggle('is-ok', ok === true);
+        el.classList.toggle('is-bad', ok === false);
+    }
+
+    function checkSet(sec) {
+        let got = 0;
+        if (sec.classList.contains('write')) return 0;
+        sec.querySelectorAll('.item').forEach(div => {
+            const fb = div.querySelector('.feedback');
+            const inp = div.querySelector('input, select');
+            if (inp.value.trim() === '') { mark(inp, null); fb.textContent = ''; return; }
+            const ok = C.answerHash(H.salt, div.dataset.id, inp.value) === H.h[div.dataset.id];
+            mark(inp, ok);
+            if (ok) got++;
+            fb.innerHTML = ok ? '<span class="ok">✓</span>' : '<span class="bad">✗</span>';
+        });
+        sec.querySelector('.score').textContent = `ได้ ${got} / ${sec.dataset.max} คะแนน`;
+        return got;
+    }
+
+    function clearSet(sec) {
+        sec.querySelectorAll('input, select').forEach(i => { i.value = ''; mark(i, null); });
+        sec.querySelectorAll('.feedback').forEach(f => f.textContent = '');
+        sec.querySelector('.score').textContent = '';
+    }
+
+    /* --- พิมพ์ใบงาน (ช่องคำตอบว่าง) --- */
+    function printSheet(which) {
+        document.body.classList.add('print-blank');
+        if (which !== 'all') document.body.dataset.printSet = which; else delete document.body.dataset.printSet;
+        const max = which === 'all' ? total : +root.querySelector(`[data-set="${which}"]`).dataset.max;
+        document.querySelector('.total-print').textContent = max;
+        window.print();
+    }
+    window.addEventListener('afterprint', () => { document.body.classList.remove('print-blank'); delete document.body.dataset.printSet; });
+
+    E.sets.forEach(renderSet);
+    if (window.Meters) Meters.render(root);
+    /* ชุดเขียนตอบ: เก็บร่างคำตอบไว้ในเครื่อง (ปิดหน้าแล้วกลับมาเขียนต่อได้) */
+    root.querySelectorAll('textarea[data-w]').forEach(t => {
+        const k = 'beb-ch02-write:' + t.dataset.w;
+        try { t.value = localStorage.getItem(k) || ''; } catch (e) { /* ใช้ได้แม้บันทึกไม่ได้ */ }
+        t.addEventListener('input', () => { try { localStorage.setItem(k, t.value); } catch (e) { /* ไม่เป็นไร */ } });
+    });
+    /* ตอนพิมพ์ ให้ช่องเขียนตอบสูงพอดีข้อความ ไม่ถูกตัด */
+    window.addEventListener('beforeprint', () => root.querySelectorAll('textarea[data-w]').forEach(t => { t.style.height = 'auto'; t.style.height = t.scrollHeight + 'px'; }));
+    window.addEventListener('afterprint', () => root.querySelectorAll('textarea[data-w]').forEach(t => { t.style.height = ''; }));
+    document.querySelector('.total-print').textContent = total;
+
+    /* --- ส่งคำตอบทั้งหมด: ตรวจทุกชุด บันทึกคะแนน+เวลา ล็อกคำตอบ แล้วสร้างใบคะแนน --- */
+    let loadedAt = Date.now(), startedAt = null, confirmBlank = false, locked = false;
+    root.addEventListener('input', () => { if (!startedAt) startedAt = Date.now(); confirmBlank = false; });
+    root.addEventListener('change', () => { if (!startedAt) startedAt = Date.now(); confirmBlank = false; });
+    const resBox = document.getElementById('result');
+    const who = () => ({ name: document.getElementById('name').value.trim(), room: document.getElementById('room').value.trim(), no: document.getElementById('no').value.trim() });
+
+    function setLocked(on) {
+        locked = on;
+        root.classList.toggle('locked', on);
+        root.querySelectorAll('input, select').forEach(i => { i.disabled = on; });  // ชุดเขียนตอบยังเขียนต่อได้
+        root.querySelectorAll('[data-act]').forEach(b => { b.disabled = on; });
+        ['name', 'room', 'no'].forEach(id => { document.getElementById(id).disabled = on; });
+        document.getElementById('submitAll').disabled = on;
+        document.getElementById('unlockAll').hidden = !on;
+    }
+
+    function submitAll() {
+        if (locked) return;
+        const w = who();
+        if (!w.name || !w.room || !w.no) { resBox.innerHTML = '<p class="bad">กรุณากรอก ชื่อ-สกุล ชั้น และเลขที่ ด้านบนให้ครบก่อนส่ง</p>'; document.getElementById('name').focus(); return; }
+        const blank = Array.from(root.querySelectorAll('input, select')).filter(i => i.value.trim() === '').length;  // ชุดเขียนตอบไม่นับ
+        if (blank && !confirmBlank) {
+            confirmBlank = true;
+            resBox.innerHTML = `<p class="bad">ยังไม่ได้ตอบ ${blank} ช่อง — ถ้าต้องการส่งเลย ให้กด “ส่งคำตอบทั้งหมด” อีกครั้ง</p>`;
+            return;
+        }
+        const sets = Array.from(root.querySelectorAll('.set:not(.write)')).map(sec => ({
+            id: sec.dataset.set, title: E.sets.find(x => x.id === sec.dataset.set).title, got: checkSet(sec), max: +sec.dataset.max
+        }));
+        const score = sets.reduce((a, x) => a + x.got, 0);
+        const submittedAt = Date.now(), start = startedAt || loadedAt;
+        const k = 'beb-ch02-ex:' + w.room + ':' + w.no + ':' + w.name;
+        const rec = C.store.get(k, { history: [] });
+        const attempt = rec.history.length + 1;
+        rec.history.push({ score, total, sets: sets.map(x => x.got), submittedAt, startedAt: start, attempt });
+        C.store.set(k, rec);
+        setLocked(true);
+
+        const detail = `<table class="ss-sets"><tr><th>ชุด</th><th>เรื่อง</th><th>ได้</th><th>เต็ม</th></tr>${sets.map((x, i) => {
+            const m = x.title.match(/^ชุดที่ \d+ (.*)$/);
+            return `<tr><td>${i + 1}</td><td>${C.esc(m ? m[1] : x.title)}</td><td><b>${x.got}</b></td><td>${x.max}</td></tr>`;
+        }).join('')}<tr><th colspan="2" style="text-align:right">รวม</th><td><b>${score}</b></td><td>${total}</td></tr></table>`;
+        ScoreSheet.render(document.getElementById('scoreSheet'), {
+            kind: 'แบบฝึกหัด', chapter: E.chapter, who: w, score, total, submittedAt, startedAt: start, attempt, detailHTML: detail
+        });
+        resBox.innerHTML = `<p class="ok" style="margin:10px 0 0">ส่งคำตอบเรียบร้อย · ${C.thaiDateTime(submittedAt)}</p>
+            <div class="big">${score} / ${total} คะแนน (${Math.round(score / total * 100)}%)</div>
+            <div class="score-actions" style="margin-top:10px">
+                <button class="btn orange" type="button" id="printScore">พิมพ์ใบคะแนน</button>
+                <span class="hint">ในหน้าต่างพิมพ์ เลือกปลายทาง “บันทึกเป็น PDF” แล้วนำไฟล์ไปแนบส่งใน Google Classroom</span>
+            </div>`;
+        document.getElementById('printScore').addEventListener('click', () => ScoreSheet.print());
+        document.getElementById('scoreSheet').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    document.getElementById('submitAll').addEventListener('click', submitAll);
+    document.getElementById('unlockAll').addEventListener('click', () => {
+        setLocked(false);
+        confirmBlank = false;
+        resBox.innerHTML = '<p class="muted">ปลดล็อกแล้ว แก้คำตอบได้ — เมื่อส่งอีกครั้งจะนับเป็นการส่งครั้งถัดไป</p>';
+        document.getElementById('scoreSheet').hidden = true;
+    });
+
+    document.addEventListener('click', e => {
+        const mine = e.target.closest('[data-print-mine]');
+        if (mine) { document.body.dataset.printSet = mine.dataset.printMine; document.querySelector('.total-print').textContent = '–'; window.print(); return; }
+        const p = e.target.closest('[data-print]');
+        if (p) { printSheet(p.dataset.print); return; }
+        const b = e.target.closest('[data-act]'); if (!b || locked) return;
+        const sec = b.closest('.set');
+        ({ check: () => checkSet(sec), clear: () => clearSet(sec) })[b.dataset.act]();
+    });
+})();
+</script>
+</body>
+</html>
